@@ -9,9 +9,11 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Color.fromARGB(255, 240, 138, 30),
       body: Center(
-        child: FlutterLogo(size: 100),
+        child: Image.asset(
+          'assets/images/logo.jpeg',
+        ),
       ),
     );
   }
