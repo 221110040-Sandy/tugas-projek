@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/theme/colors.dart';
 
 class SplashScreen extends StatelessWidget {
   @override
@@ -9,9 +10,11 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: primaryColor,
       body: Center(
-        child: FlutterLogo(size: 100),
+        child: Image.asset(
+          'assets/images/logo.jpeg',
+        ),
       ),
     );
   }
