@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/theme/colors.dart';
 
 class SplashScreen extends StatelessWidget {
   @override
@@ -9,7 +10,7 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 240, 138, 30),
+      backgroundColor: primaryColor,
       body: Center(
         child: Image.asset(
           'assets/images/logo.jpeg',
