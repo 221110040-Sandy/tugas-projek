@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomInputField extends StatelessWidget {
+class CustomInputField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final IconData icon;
@@ -11,21 +11,46 @@ class CustomInputField extends StatelessWidget {
     required this.controller,
     required this.labelText,
     required this.icon,
-    this.obscureText = false,
+    this.obscureText = false, // Default is false for non-password fields
   }) : super(key: key);
+
+  @override
+  _CustomInputFieldState createState() => _CustomInputFieldState();
+}
+
+class _CustomInputFieldState extends State<CustomInputField> {
+  bool _obscureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.obscureText; // Use the passed obscureText value
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,
-      obscureText: obscureText,
+      controller: widget.controller,
+      obscureText: widget.obscureText
+          ? _obscureText
+          : false, // Only obscure text if it's a password field
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
-        labelText: labelText,
+        labelText: widget.labelText,
         labelStyle: const TextStyle(color: Colors.white),
         floatingLabelBehavior:
             FloatingLabelBehavior.never, // Label disappears when typing
-        prefixIcon: Icon(icon, color: Colors.white),
+        prefixIcon: Icon(widget.icon, color: Colors.white),
+        // Show "show/hide" button only for password fields
+        suffixIcon: widget.obscureText
+            ? IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white,
+                ),
+                onPressed: _togglePasswordVisibility,
+              )
+            : null,
         filled: true,
         fillColor: Colors.white24,
         border: OutlineInputBorder(
@@ -35,5 +60,11 @@ class CustomInputField extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(vertical: 20.0),
       ),
     );
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
   }
 }
