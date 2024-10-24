@@ -10,17 +10,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final AuthService _authService = AuthService();
-  int _currentIndex = 0; // Track the current bottom nav index
+  int _currentIndex = 0;
 
   // List of widgets for each bottom navigation item
   final List<Widget> _pages = [
-    const Center(child: Text('Dashboard Page')),
-    const Center(child: Text('Sales Page')),
-    const Center(child: Text('Purchases Page')),
-    const Center(child: Text('Settings Page')),
+    const Center(child: Text('Home Page')),
+    const Center(
+        child: Text('Master Data Page')), // For master data (items, customers)
+    const Center(child: Text('Transactions Page')),
+    const Center(child: Text('Reports Page')),
+    const Center(child: Text('Utility Page')), // Can be named Settings/Utility
   ];
 
-  // Update the current page based on the tapped item
+  // Handle bottom nav item taps
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -31,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getAppBarTitle()), // Dynamic app bar title based on page
+        title: Text(_getAppBarTitle()), // Dynamic app bar title
         actions: [
           IconButton(
             onPressed: () async {
@@ -42,47 +44,52 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
       ),
-      body: _pages[
-          _currentIndex], // Show the page corresponding to the selected nav item
+      body: _pages[_currentIndex], // Display current page
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex, // Track selected item
-        onTap: _onItemTapped, // Handle bottom nav item taps
-        selectedItemColor: Colors.orangeAccent, // Color for selected items
-        unselectedItemColor: Colors.grey, // Color for unselected items
-        type: BottomNavigationBarType.fixed, // Ensures all items are displayed
+        currentIndex: _currentIndex, // Track selected tab
+        onTap: _onItemTapped, // Handle tab change
+        selectedItemColor: Colors.orangeAccent,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed, // Show all items
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Sales',
+            icon: Icon(Icons.storage),
+            label: 'Master', // For master data like items, customers
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
-            label: 'Purchases',
+            icon: Icon(Icons.swap_horiz),
+            label: 'Transactions',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Reports',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'Utility', // Can also be 'Settings'
           ),
         ],
       ),
     );
   }
 
-  // Function to set the AppBar title based on the selected page
+  // Function to set AppBar title based on the selected page
   String _getAppBarTitle() {
     switch (_currentIndex) {
       case 0:
-        return 'Dashboard';
+        return 'Home';
       case 1:
-        return 'Sales';
+        return 'Master Data';
       case 2:
-        return 'Purchases';
+        return 'Transactions';
       case 3:
-        return 'Settings';
+        return 'Reports';
+      case 4:
+        return 'Utility';
       default:
         return 'Home';
     }
