@@ -22,26 +22,65 @@ class AuthService {
     String storedPassword = userData['password'];
 
     if (hashedInputPassword == storedPassword) {
-      await _saveUserToLocal(username);
+      String role = userData['role']; // Assume role is stored in Firestore
+      await _saveUserToLocal(username, role); // Save role along with username
       return true;
     }
 
     return false;
   }
 
-  Future<void> _saveUserToLocal(String username) async {
+  Future<void> _saveUserToLocal(String username, String role) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('username', username);
+    await prefs.setString('role', role); // Save role locally
   }
 
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('username');
+    await prefs.remove('role'); // Remove role on logout
   }
 
   Future<bool> isLoggedIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? username = prefs.getString('username');
     return username != null && username.isNotEmpty;
+  }
+
+  Future<String?> getRole() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('role'); // Retrieve role from local storage
+  }
+
+  Future<bool> changePassword(String oldPassword, String newPassword) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? username = prefs.getString('username');
+
+    if (username == null) return false;
+
+    // Mendapatkan data pengguna dari Firestore
+    QuerySnapshot result = await usersCollection
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+
+    if (result.docs.isEmpty) {
+      return false;
+    }
+
+    var userData = result.docs.first.data() as Map<String, dynamic>;
+    String storedPassword = userData['password'];
+
+    // Verifikasi kata sandi lama
+    if (hashPassword(oldPassword) == storedPassword) {
+      // Update kata sandi baru
+      await usersCollection.doc(result.docs.first.id).update({
+        'password': hashPassword(newPassword),
+      });
+      return true;
+    }
+
+    return false;
   }
 }

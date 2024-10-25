@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_akhir/services/auth_services.dart';
+import 'package:tugas_akhir/screen/settings_screen.dart'; // Impor halaman Settings
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,11 +16,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // List of widgets for each bottom navigation item
   final List<Widget> _pages = [
     const Center(child: Text('Home Page')),
-    const Center(
-        child: Text('Master Data Page')), // For master data (items, customers)
+    const Center(child: Text('Master Data Page')), // Master data page
     const Center(child: Text('Transactions Page')),
     const Center(child: Text('Reports Page')),
-    const Center(child: Text('Utility Page')), // Can be named Settings/Utility
+    SettingsScreen(), // Utility page replaced with SettingsPage
   ];
 
   // Handle bottom nav item taps
@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.storage),
-            label: 'Master', // For master data like items, customers
+            label: 'Master',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.swap_horiz),
@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Utility', // Can also be 'Settings'
+            label: 'Utility',
           ),
         ],
       ),
