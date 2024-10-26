@@ -40,6 +40,8 @@ dependencies:
   cloud_firestore: ^5.4.4
   crypto: ^3.0.0
   shared_preferences: ^2.3.2
+  sqflite: ^2.0.0+4
+  path_provider: ^2.0.11
 
 
 dev_dependencies:

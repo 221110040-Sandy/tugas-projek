@@ -8,15 +8,19 @@ import 'package:tugas_akhir/screen/splash_screen.dart';
 import 'package:tugas_akhir/screen/login_screen.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:tugas_akhir/utils.dart';
+import 'package:tugas_akhir/services/database_helper.dart'; // Import your DatabaseHelper
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     print("Firebase initialized successfully");
 
+    // Initialize the Firestore service
     FirestoreService firestoreService = FirestoreService();
     bool superAdminExists = await firestoreService.checkSuperAdminExists();
     if (!superAdminExists) {
@@ -28,6 +32,10 @@ Future<void> main() async {
   } catch (e) {
     print("Failed to initialize Firebase: $e");
   }
+
+  // Initialize SQLite database
+  DatabaseHelper dbHelper = DatabaseHelper(); // Create an instance
+  await dbHelper.database; // This will create the database if it doesn't exist
 
   runApp(MyApp());
 }

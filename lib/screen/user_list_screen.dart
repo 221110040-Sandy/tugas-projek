@@ -49,14 +49,18 @@ class UserListScreen extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () {
-                        _showEditRoleDialog(context, userId, userData['role']);
+                        _showEditRoleDialog(context, userId,
+                            userData['username'], userData['role']);
                       },
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
                         _deleteUser(
-                            context, userId); // Tambahkan context ke sini
+                          context,
+                          userId,
+                          userData['username'],
+                        ); // Tambahkan context ke sini
                       },
                     ),
                   ],
@@ -69,8 +73,8 @@ class UserListScreen extends StatelessWidget {
     );
   }
 
-  void _showEditRoleDialog(
-      BuildContext context, String userId, String currentRole) {
+  void _showEditRoleDialog(BuildContext context, String userId, String username,
+      String currentRole) {
     final roleController = TextEditingController(text: currentRole);
     showDialog(
       context: context,
@@ -107,7 +111,7 @@ class UserListScreen extends StatelessWidget {
               child: const Text('Save'),
               onPressed: () async {
                 await FirestoreService()
-                    .updateUserRole(userId, roleController.text);
+                    .updateUserRole(userId, username, roleController.text);
                 Navigator.of(context).pop();
               },
             ),
@@ -117,8 +121,8 @@ class UserListScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteUser(BuildContext context, String userId) async {
-    // Tambahkan parameter context di sini
+  Future<void> _deleteUser(
+      BuildContext context, String userId, String username) async {
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -140,7 +144,7 @@ class UserListScreen extends StatelessWidget {
     );
 
     if (confirmation == true) {
-      await FirestoreService().deleteUser(userId);
+      await FirestoreService().deleteUser(userId, username);
     }
   }
 }
