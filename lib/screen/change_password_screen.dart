@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/components/custom_button.dart';
 import 'package:tugas_akhir/components/custom_input_field.dart';
 import 'package:tugas_akhir/services/auth_services.dart';
+import 'package:tugas_akhir/theme/colors.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -21,10 +23,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       appBar: AppBar(
         title: const Text('Change Password'),
       ),
-      body: Padding(
+      body: Container(
         padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              secondaryColor.withOpacity(0.7),
+              accentColor.withOpacity(0.7),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         child: Column(
           children: [
+            Text(
+              'Change Password',
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
             CustomInputField(
               controller: _oldPasswordController,
               labelText: 'Old Password',
@@ -46,9 +68,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               obscureText: true,
             ),
             const SizedBox(height: 32.0),
-            ElevatedButton(
+            CustomButton(
+              text: 'Change Password',
               onPressed: _changePassword,
-              child: const Text('Change Password'),
             ),
             if (errorMessage.isNotEmpty)
               Padding(
@@ -65,7 +87,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Future<void> _changePassword() async {
-    // Validate old password and new passwords
     if (_newPasswordController.text != _confirmPasswordController.text) {
       setState(() {
         errorMessage = 'New password and confirm password do not match.';
@@ -79,7 +100,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
 
     if (success) {
-      // Show success message and navigate back
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password changed successfully!')),
       );

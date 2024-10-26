@@ -5,8 +5,7 @@ class CustomInputField extends StatefulWidget {
   final String labelText;
   final IconData icon;
   final bool obscureText;
-  final bool
-      isDarkBackground; // Add parameter to indicate background color type
+  final bool isDarkBackground;
 
   const CustomInputField({
     Key? key,
@@ -14,7 +13,7 @@ class CustomInputField extends StatefulWidget {
     required this.labelText,
     required this.icon,
     this.obscureText = false,
-    this.isDarkBackground = true, // Default is true for dark backgrounds
+    this.isDarkBackground = false,
   }) : super(key: key);
 
   @override

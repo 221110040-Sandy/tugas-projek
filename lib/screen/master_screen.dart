@@ -5,32 +5,40 @@ class MasterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Master'),
-      ),
-      body: GridView.count(
-        crossAxisCount: 2, // Jumlah kolom dalam GridView
+      body: Container(
         padding: const EdgeInsets.all(16.0),
-        children: <Widget>[
-          _buildGridItem(
-            context,
-            'Master Barang',
-            Icons.shopping_cart,
-            () {
-              // Navigasi ke halaman Master Barang
-              Navigator.pushNamed(context, '/master-items');
-            },
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              secondaryColor.withOpacity(0.7),
+              accentColor.withOpacity(0.7),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          _buildGridItem(
-            context,
-            'Pelanggan',
-            Icons.people,
-            () {
-              // Navigasi ke halaman Pelanggan
-              Navigator.pushNamed(context, '/customers');
-            },
-          ),
-        ],
+        ),
+        child: GridView.count(
+          crossAxisCount: 2,
+          padding: const EdgeInsets.all(16.0),
+          children: <Widget>[
+            _buildGridItem(
+              context,
+              'Master Barang',
+              Icons.shopping_cart,
+              () {
+                Navigator.pushNamed(context, '/master-items');
+              },
+            ),
+            _buildGridItem(
+              context,
+              'Pelanggan',
+              Icons.people,
+              () {
+                Navigator.pushNamed(context, '/customers');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

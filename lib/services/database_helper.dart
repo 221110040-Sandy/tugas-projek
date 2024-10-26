@@ -10,14 +10,12 @@ class DatabaseHelper {
 
   DatabaseHelper._internal();
 
-  /// Gets the database instance, creating it if it doesn't exist.
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
 
-  /// Initializes the database and creates the 'users' table.
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'AyangBeb.db');
     return await openDatabase(
@@ -37,14 +35,12 @@ class DatabaseHelper {
     );
   }
 
-  /// Inserts a default super admin if it doesn't already exist.
   Future<void> _insertDefaultSuperAdmin(Database db) async {
     String username = 'superadmin';
     String password = hashPassword('superadminpassword');
     String role = 'super_admin';
 
     try {
-      // Check if superadmin already exists
       List<Map<String, dynamic>> result = await db.query(
         'users',
         where: 'username = ?',
@@ -66,7 +62,6 @@ class DatabaseHelper {
     }
   }
 
-  /// Inserts a new user into the database.
   Future<void> insertUser(String username, String password, String role) async {
     final db = await database;
     try {
@@ -85,7 +80,6 @@ class DatabaseHelper {
     }
   }
 
-  /// Retrieves a user by username.
   Future<Map<String, dynamic>?> getUser(String username) async {
     final db = await database;
     try {
@@ -102,7 +96,6 @@ class DatabaseHelper {
     }
   }
 
-  /// Deletes a user by username.
   Future<void> deleteUser(String username) async {
     final db = await database;
     try {
@@ -117,7 +110,6 @@ class DatabaseHelper {
     }
   }
 
-  /// User login method.
   Future<String?> login(String username, String password) async {
     final db = await database;
 
@@ -135,7 +127,6 @@ class DatabaseHelper {
     }
   }
 
-  /// Updates the password for a user.
   Future<void> updateUserPassword(String username, String newPassword) async {
     final db = await database;
     try {
@@ -151,7 +142,6 @@ class DatabaseHelper {
     }
   }
 
-  /// Updates the role for a user.
   Future<void> updateUserRole(String username, String newRole) async {
     final db = await database;
     try {
@@ -167,7 +157,6 @@ class DatabaseHelper {
     }
   }
 
-  /// Retrieves all users from the database.
   Future<List<Map<String, dynamic>>> getAllUsers() async {
     final db = await database;
     try {

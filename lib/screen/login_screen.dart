@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/components/custom_button.dart';
 import 'package:tugas_akhir/components/custom_input_field.dart';
 import 'package:tugas_akhir/services/auth_services.dart';
 import 'package:tugas_akhir/theme/colors.dart';
@@ -67,30 +68,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 20.0),
-                ElevatedButton(
+                CustomButton(
+                  text: 'Login',
                   onPressed: _login,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    backgroundColor: Colors.white, // Button color
-                    foregroundColor: primaryColor, // Text color
-                    elevation: 8.0,
-                  ),
-                  child: const SizedBox(
-                    width: double.infinity,
-                    child: Center(
-                      child: Text(
-                        'LOGIN',
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),

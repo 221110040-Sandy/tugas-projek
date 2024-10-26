@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/screen/master_screen.dart';
 import 'package:tugas_akhir/services/auth_services.dart';
-import 'package:tugas_akhir/screen/settings_screen.dart'; // Impor halaman Settings
+import 'package:tugas_akhir/screen/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,16 +14,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final AuthService _authService = AuthService();
   int _currentIndex = 0;
 
-  // List of widgets for each bottom navigation item
   final List<Widget> _pages = [
     const Center(child: Text('Home Page')),
-    const Center(child: Text('Master Data Page')), // Master data page
+    MasterScreen(),
     const Center(child: Text('Transactions Page')),
     const Center(child: Text('Reports Page')),
-    SettingsScreen(), // Utility page replaced with SettingsPage
+    SettingsScreen(),
   ];
 
-  // Handle bottom nav item taps
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -33,24 +32,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getAppBarTitle()), // Dynamic app bar title
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await _authService.logout();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-            icon: const Icon(Icons.power_settings_new),
-          )
-        ],
+        title: Text(_getAppBarTitle()),
       ),
-      body: _pages[_currentIndex], // Display current page
+      body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex, // Track selected tab
-        onTap: _onItemTapped, // Handle tab change
+        currentIndex: _currentIndex,
+        onTap: _onItemTapped,
         selectedItemColor: Colors.orangeAccent,
         unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed, // Show all items
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -70,14 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Utility',
+            label: 'Settings',
           ),
         ],
       ),
     );
   }
 
-  // Function to set AppBar title based on the selected page
   String _getAppBarTitle() {
     switch (_currentIndex) {
       case 0:
@@ -89,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 3:
         return 'Reports';
       case 4:
-        return 'Utility';
+        return 'Settings';
       default:
         return 'Home';
     }
