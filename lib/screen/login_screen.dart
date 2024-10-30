@@ -81,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    print('Username: ${_usernameController.text}');
     bool success = await _authService.login(
       _usernameController.text,
       _passwordController.text,

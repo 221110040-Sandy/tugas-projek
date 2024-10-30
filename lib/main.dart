@@ -30,7 +30,8 @@ Future<void> main() async {
     FirestoreService firestoreService = FirestoreService();
     bool superAdminExists = await firestoreService.checkSuperAdminExists();
     if (!superAdminExists) {
-      await firestoreService.addSuperAdmin('superadmin', 'superadminpassword');
+      await firestoreService.addSuperAdmin(
+          'superadmin@gmail.com', 'superadminpassword');
       print("Superadmin berhasil ditambahkan");
     } else {
       print("Superadmin sudah ada");
