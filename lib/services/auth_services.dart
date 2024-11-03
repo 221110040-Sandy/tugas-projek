@@ -47,7 +47,6 @@ class AuthService {
     await prefs.setString('role', role);
   }
 
-  // Fungsi logout
   Future<void> logout() async {
     await _firebaseAuth.signOut();
 

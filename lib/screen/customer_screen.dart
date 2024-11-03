@@ -35,6 +35,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Customer'),
+          backgroundColor: secondaryColor,
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
@@ -44,84 +45,82 @@ class _CustomerScreenState extends State<CustomerScreen> {
             ),
           ],
         ),
-        body: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                secondaryColor.withOpacity(0.7),
-                accentColor.withOpacity(0.7),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: searchController,
-                  decoration: const InputDecoration(
-                    labelText: 'Search Customer',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      filteredCustomers = customers.where((customer) {
-                        final customerData =
-                            customer.data() as Map<String, dynamic>;
-                        return customerData['nama']
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            customerData['alamat']
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            customerData['no_hp']
-                                .toLowerCase()
-                                .contains(value.toLowerCase());
-                      }).toList();
-                    });
-                  },
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  labelText: 'Search Customer',
+                  border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    filteredCustomers = customers.where((customer) {
+                      final customerData =
+                          customer.data() as Map<String, dynamic>;
+                      return customerData['nama']
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          customerData['alamat']
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          customerData['no_hp']
+                              .toLowerCase()
+                              .contains(value.toLowerCase());
+                    }).toList();
+                  });
+                },
               ),
-              Expanded(
-                child: Container(
-                  child: ListView.builder(
-                    itemCount: filteredCustomers.length,
-                    itemBuilder: (context, index) {
-                      final customerData = filteredCustomers[index].data()
-                          as Map<String, dynamic>;
-                      final customerId = filteredCustomers[index].id;
+            ),
+            Expanded(
+              child: Container(
+                child: ListView.builder(
+                  itemCount: filteredCustomers.length,
+                  itemBuilder: (context, index) {
+                    final customerData =
+                        filteredCustomers[index].data() as Map<String, dynamic>;
+                    final customerId = filteredCustomers[index].id;
 
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border:
-                              Border.all(color: Colors.grey.withOpacity(0.5)),
-                          borderRadius: BorderRadius.circular(10.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4.0,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16.0),
-                          title: Text(
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16.0),
+                      padding: const EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15.0),
+                        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            blurRadius: 8.0,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
                             '${customerData['nama']} - ${customerData['kode']}',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black87),
                           ),
-                          subtitle: Text(
-                            'Alamat: ${customerData['alamat']}\nNo HP: ${customerData['no_hp']}',
-                            style: TextStyle(color: Colors.grey[600]),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Alamat: ${customerData['alamat']}',
+                            style: TextStyle(color: Colors.grey[700]),
                           ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
+                          const SizedBox(height: 4),
+                          Text(
+                            'No HP: ${customerData['no_hp']}',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
                                 icon: const Icon(Icons.edit),
@@ -129,23 +128,25 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                   _showEditCustomerDialog(
                                       context, customerId, customerData);
                                 },
+                                color: Colors.blueAccent,
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
                                   _deleteCustomer(context, customerId);
                                 },
+                                color: Colors.redAccent,
                               ),
                             ],
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ));
   }
 

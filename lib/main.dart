@@ -6,6 +6,7 @@ import 'package:tugas_akhir/firebase_options.dart';
 import 'package:tugas_akhir/screen/change_password_screen.dart';
 import 'package:tugas_akhir/screen/customer_screen.dart';
 import 'package:tugas_akhir/screen/home_screen.dart';
+import 'package:tugas_akhir/screen/hot_product_screen.dart';
 import 'package:tugas_akhir/screen/profile_screen.dart';
 import 'package:tugas_akhir/screen/splash_screen.dart';
 import 'package:tugas_akhir/screen/login_screen.dart';
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfileScreen(),
         '/change-password': (context) => ChangePasswordScreen(),
         '/user-list': (context) => UserListScreen(),
+        '/hot-product': (context) => HotProductsScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
