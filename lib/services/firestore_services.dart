@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tugas_akhir/utils.dart';
 import 'package:tugas_akhir/services/database_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirestoreService {
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
   final CollectionReference customersCollection =
       FirebaseFirestore.instance.collection('customers');
+  final CollectionReference itemsCollection =
+      FirebaseFirestore.instance.collection('items');
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final DatabaseHelper dbHelper = DatabaseHelper();
 
   Future<bool> checkSuperAdminExists() async {
@@ -32,10 +36,19 @@ class FirestoreService {
 
       DocumentReference docRef = await usersCollection.add({
         'username': username,
-        'password': hashedPassword,
         'role': 'super_admin',
         'createdAt': FieldValue.serverTimestamp(),
       });
+
+      try {
+        await _firebaseAuth.createUserWithEmailAndPassword(
+          email: username,
+          password: password,
+        );
+      } catch (e) {
+        print('Pendaftaran gagal. Coba lagi.');
+      }
+
       await dbHelper.insertUser(username, hashedPassword, 'super_admin');
       print('Super Admin $username added successfully.');
     } catch (e) {
@@ -48,10 +61,19 @@ class FirestoreService {
     try {
       DocumentReference docRef = await usersCollection.add({
         'username': username,
-        'password': hashedPassword,
         'role': role,
         'createdAt': FieldValue.serverTimestamp(),
       });
+
+      try {
+        await _firebaseAuth.createUserWithEmailAndPassword(
+          email: username,
+          password: password,
+        );
+      } catch (e) {
+        print('Pendaftaran gagal. Coba lagi.');
+      }
+
       await dbHelper.insertUser(username, hashedPassword, role);
       print('User $username added successfully.');
     } catch (e) {
@@ -92,6 +114,80 @@ class FirestoreService {
     }
   }
 
+  Future<void> addItem(
+      String kode, String nama, int stokAwal, double harga) async {
+    try {
+      await itemsCollection.add({
+        'kode': kode,
+        'nama': nama,
+        'stok_awal': stokAwal,
+        'harga': harga,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      print('Item $nama added successfully.');
+    } catch (e) {
+      print('Error adding item: $e');
+    }
+  }
+
+  Future<void> updateItem(
+      String itemId, String nama, int stokAwal, double harga) async {
+    try {
+      await itemsCollection.doc(itemId).update({
+        'nama': nama,
+        'stok_awal': stokAwal,
+        'harga': harga,
+      });
+      print('Item $nama updated successfully.');
+    } catch (e) {
+      print('Error updating item: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getItems() async {
+    try {
+      QuerySnapshot snapshot = await itemsCollection.get();
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
+          .toList();
+    } catch (e) {
+      print('Error getting items: $e');
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getLastItem() async {
+    try {
+      QuerySnapshot snapshot = await itemsCollection
+          .orderBy('createdAt', descending: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return {
+          'id': snapshot.docs.first.id,
+          ...snapshot.docs.first.data() as Map<String, dynamic>
+        };
+      } else {
+        print('No items found.');
+        return null;
+      }
+    } catch (e) {
+      print('Error getting last item: $e');
+      return null;
+    }
+  }
+
+  Future<void> deleteItem(String itemId) async {
+    try {
+      await itemsCollection.doc(itemId).delete();
+      print('Item with ID: $itemId deleted successfully.');
+    } catch (e) {
+      print('Error deleting item: $e');
+    }
+  }
+
+  // CRUD untuk Customers
   Future<void> addCustomer(
       String kode, String nama, String alamat, String noHp) async {
     try {

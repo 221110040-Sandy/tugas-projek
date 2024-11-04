@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 40.0),
                 CustomInputField(
                   controller: _usernameController,
-                  labelText: 'Username',
+                  labelText: 'Email',
                   icon: Icons.person_outline,
                   isDarkBackground: true,
                 ),
@@ -81,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    print('Username: ${_usernameController.text}');
     bool success = await _authService.login(
       _usernameController.text,
       _passwordController.text,
@@ -94,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Login Gagal'),
-            content: const Text('Username atau password salah.'),
+            content: const Text('Email atau password salah.'),
             actions: [
               TextButton(
                 child: const Text('OK'),

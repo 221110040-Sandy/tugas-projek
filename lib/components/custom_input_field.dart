@@ -58,7 +58,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
               )
             : null,
         filled: true,
-        fillColor: widget.isDarkBackground ? Colors.white24 : Colors.grey[200],
+        fillColor: widget.isDarkBackground ? Colors.white24 : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
           borderSide: BorderSide.none,

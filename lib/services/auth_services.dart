@@ -1,29 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tugas_akhir/utils.dart';
 import 'package:tugas_akhir/services/database_helper.dart';
 
 class AuthService {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
 
   Future<bool> login(String username, String password) async {
-    String hashedInputPassword = hashPassword(password);
+    try {
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+        email: username,
+        password: password,
+      );
+      QuerySnapshot result = await usersCollection
+          .where('username', isEqualTo: userCredential.user!.email)
+          .limit(1)
+          .get();
 
-    QuerySnapshot result = await usersCollection
-        .where('username', isEqualTo: username)
-        .limit(1)
-        .get();
-
-    if (result.docs.isNotEmpty) {
-      var userData = result.docs.first.data() as Map<String, dynamic>;
-      String storedPassword = userData['password'];
-
-      if (hashedInputPassword == storedPassword) {
+      if (result.docs.isNotEmpty) {
+        var userData = result.docs.first.data() as Map<String, dynamic>;
         String role = userData['role'];
         await _saveUserToLocal(username, role);
         return true;
       }
+    } catch (e) {
+      print("Login error: $e");
     }
 
     DatabaseHelper dbHelper = DatabaseHelper();
@@ -43,6 +48,8 @@ class AuthService {
   }
 
   Future<void> logout() async {
+    await _firebaseAuth.signOut();
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('username');
     await prefs.remove('role');
@@ -65,28 +72,25 @@ class AuthService {
 
     if (username == null) return false;
 
-    QuerySnapshot result = await usersCollection
-        .where('username', isEqualTo: username)
-        .limit(1)
-        .get();
+    try {
+      User user = _firebaseAuth.currentUser!;
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: username,
+        password: oldPassword,
+      );
+      print(1);
+      await user.reauthenticateWithCredential(credential);
+      print(2);
 
-    if (result.docs.isEmpty) {
-      return false;
-    }
-
-    var userData = result.docs.first.data() as Map<String, dynamic>;
-    String storedPassword = userData['password'];
-
-    if (hashPassword(oldPassword) == storedPassword) {
-      await usersCollection.doc(result.docs.first.id).update({
-        'password': hashPassword(newPassword),
-      });
+      await user.updatePassword(newPassword);
 
       DatabaseHelper dbHelper = DatabaseHelper();
       await dbHelper.updateUserPassword(username, newPassword);
-      return true;
-    }
 
-    return false;
+      return true;
+    } catch (e) {
+      print("Change password error: $e");
+      return false;
+    }
   }
 }

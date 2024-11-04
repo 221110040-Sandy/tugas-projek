@@ -6,6 +6,8 @@ import 'package:tugas_akhir/firebase_options.dart';
 import 'package:tugas_akhir/screen/change_password_screen.dart';
 import 'package:tugas_akhir/screen/customer_screen.dart';
 import 'package:tugas_akhir/screen/home_screen.dart';
+import 'package:tugas_akhir/screen/hot_product_screen.dart';
+import 'package:tugas_akhir/screen/master_items.dart';
 import 'package:tugas_akhir/screen/profile_screen.dart';
 import 'package:tugas_akhir/screen/splash_screen.dart';
 import 'package:tugas_akhir/screen/login_screen.dart';
@@ -30,7 +32,8 @@ Future<void> main() async {
     FirestoreService firestoreService = FirestoreService();
     bool superAdminExists = await firestoreService.checkSuperAdminExists();
     if (!superAdminExists) {
-      await firestoreService.addSuperAdmin('superadmin', 'superadminpassword');
+      await firestoreService.addSuperAdmin(
+          'superadmin@gmail.com', 'superadminpassword');
       print("Superadmin berhasil ditambahkan");
     } else {
       print("Superadmin sudah ada");
@@ -71,6 +74,8 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfileScreen(),
         '/change-password': (context) => ChangePasswordScreen(),
         '/user-list': (context) => UserListScreen(),
+        '/hot-product': (context) => HotProductsScreen(),
+        '/master-items': (context) => MasterItemsScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

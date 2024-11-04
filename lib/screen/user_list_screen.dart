@@ -120,7 +120,7 @@ class UserListScreen extends StatelessWidget {
               TextField(
                 controller: usernameController,
                 decoration: InputDecoration(
-                  labelText: 'Username',
+                  labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
               ),

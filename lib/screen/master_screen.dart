@@ -37,6 +37,14 @@ class MasterScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/customers');
               },
             ),
+            _buildGridItem(
+              context,
+              'Hot Product',
+              Icons.whatshot,
+              () {
+                Navigator.pushNamed(context, '/hot-product');
+              },
+            ),
           ],
         ),
       ),
