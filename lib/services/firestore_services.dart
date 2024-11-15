@@ -49,8 +49,8 @@ class FirestoreService {
         print('Pendaftaran gagal. Coba lagi.');
       }
 
-      await dbHelper.insertUser(username, hashedPassword, 'super_admin');
-      print('Super Admin $username added successfully.');
+      // await dbHelper.insertUser(username, hashedPassword, 'super_admin');
+      // print('Super Admin $username added successfully.');
     } catch (e) {
       print('Error adding Super Admin: $e');
     }
@@ -187,7 +187,6 @@ class FirestoreService {
     }
   }
 
-  // CRUD untuk Customers
   Future<void> addCustomer(
       String kode, String nama, String alamat, String noHp) async {
     try {

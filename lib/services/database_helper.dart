@@ -36,7 +36,7 @@ class DatabaseHelper {
   }
 
   Future<void> _insertDefaultSuperAdmin(Database db) async {
-    String username = 'superadmin';
+    String username = 'superadmin@gmail.com';
     String password = hashPassword('superadminpassword');
     String role = 'super_admin';
 
