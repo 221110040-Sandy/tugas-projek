@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_akhir/screen/master_screen.dart';
+import 'package:tugas_akhir/screen/transaction_screen.dart';
 import 'package:tugas_akhir/services/auth_services.dart';
 import 'package:tugas_akhir/screen/settings_screen.dart';
 
@@ -17,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     const Center(child: Text('Home Page')),
     MasterScreen(),
-    const Center(child: Text('Transactions Page')),
+    TransactionScreen(),
     const Center(child: Text('Reports Page')),
     SettingsScreen(),
   ];

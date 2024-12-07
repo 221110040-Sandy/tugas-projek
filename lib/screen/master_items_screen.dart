@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
+import 'package:tugas_akhir/services/imagekit.dart';
 import 'package:tugas_akhir/theme/colors.dart';
+import 'package:tugas_akhir/components/image_picker_component.dart';
 
 class MasterItemsScreen extends StatefulWidget {
   @override
@@ -15,6 +18,7 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
   final TextEditingController hargaController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
 
+  File? _selectedImage;
   List<QueryDocumentSnapshot> items = [];
   List<QueryDocumentSnapshot> filteredItems = [];
 
@@ -30,20 +34,40 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
   }
 
   Future<void> _addNewItem() async {
-    final lastItem = await firestoreService.getLastItem();
-    final newKode = (lastItem != null
-            ? (lastItem['kode'] is String
-                ? int.parse(lastItem['kode']) + 1
-                : lastItem['kode'] + 1)
-            : 1)
-        .toString();
+    if (_selectedImage == null) {
+      print("No image selected.");
+      return;
+    }
 
-    await firestoreService.addItem(newKode, namaController.text,
-        int.parse(stokAwalController.text), double.parse(hargaController.text));
-    namaController.clear();
-    stokAwalController.clear();
-    Navigator.of(context).pop();
-    hargaController.clear();
+    final imageUrl = await ImageKitService().uploadImage(_selectedImage!);
+
+    if (imageUrl != null) {
+      final lastItem = await firestoreService.getLastItem();
+      final newKode = (lastItem != null
+              ? (lastItem['kode'] is String
+                  ? int.parse(lastItem['kode']) + 1
+                  : lastItem['kode'] + 1)
+              : 1)
+          .toString();
+
+      await firestoreService.addItem(
+        newKode,
+        namaController.text,
+        int.parse(stokAwalController.text),
+        double.parse(hargaController.text),
+        imageUrl,
+      );
+
+      namaController.clear();
+      stokAwalController.clear();
+      hargaController.clear();
+      setState(() {
+        _selectedImage = null;
+      });
+      Navigator.of(context).pop();
+    } else {
+      print("Image upload failed.");
+    }
   }
 
   void _showAddItemDialog() {
@@ -52,24 +76,34 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Tambah Barang'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: namaController,
-                decoration: const InputDecoration(labelText: 'Nama Barang'),
-              ),
-              TextField(
-                controller: stokAwalController,
-                decoration: const InputDecoration(labelText: 'Stok Awal'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: hargaController,
-                decoration: const InputDecoration(labelText: 'Harga'),
-                keyboardType: TextInputType.number,
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: namaController,
+                  decoration: const InputDecoration(labelText: 'Nama Barang'),
+                ),
+                TextField(
+                  controller: stokAwalController,
+                  decoration: const InputDecoration(labelText: 'Stok Awal'),
+                  keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  controller: hargaController,
+                  decoration: const InputDecoration(labelText: 'Harga'),
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 16),
+                ImagePickerComponent(
+                  onImageSelected: (file) {
+                    setState(() {
+                      _selectedImage = file;
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -78,9 +112,7 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
             ),
             TextButton(
               child: const Text('Tambah'),
-              onPressed: () async {
-                await _addNewItem();
-              },
+              onPressed: _addNewItem,
             ),
           ],
         );
@@ -131,6 +163,8 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
                     filteredItems[index].data() as Map<String, dynamic>;
                 final itemId = filteredItems[index].id;
 
+                final imageUrl = itemData['imageUrl'];
+
                 return ListTile(
                   title: Text('${itemData['nama']} - ${itemData['kode']}'),
                   subtitle: Column(
@@ -140,6 +174,10 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
                       Text('Harga: Rp${itemData['harga']}'),
                     ],
                   ),
+                  leading: imageUrl != null
+                      ? Image.network(imageUrl,
+                          width: 50, height: 50, fit: BoxFit.cover)
+                      : Icon(Icons.image, size: 50),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

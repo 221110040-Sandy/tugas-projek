@@ -10,6 +10,8 @@ class FirestoreService {
       FirebaseFirestore.instance.collection('customers');
   final CollectionReference itemsCollection =
       FirebaseFirestore.instance.collection('items');
+  final CollectionReference salesCollection =
+      FirebaseFirestore.instance.collection('sales');
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final DatabaseHelper dbHelper = DatabaseHelper();
 
@@ -48,9 +50,6 @@ class FirestoreService {
       } catch (e) {
         print('Pendaftaran gagal. Coba lagi.');
       }
-
-      await dbHelper.insertUser(username, hashedPassword, 'super_admin');
-      print('Super Admin $username added successfully.');
     } catch (e) {
       print('Error adding Super Admin: $e');
     }
@@ -114,14 +113,15 @@ class FirestoreService {
     }
   }
 
-  Future<void> addItem(
-      String kode, String nama, int stokAwal, double harga) async {
+  Future<void> addItem(String kode, String nama, int stokAwal, double harga,
+      String? imageUrl) async {
     try {
       await itemsCollection.add({
         'kode': kode,
         'nama': nama,
         'stok_awal': stokAwal,
         'harga': harga,
+        'imageUrl': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
       });
       print('Item $nama added successfully.');
@@ -187,7 +187,6 @@ class FirestoreService {
     }
   }
 
-  // CRUD untuk Customers
   Future<void> addCustomer(
       String kode, String nama, String alamat, String noHp) async {
     try {
@@ -225,6 +224,80 @@ class FirestoreService {
       print('Customer with ID: $customerId deleted successfully.');
     } catch (e) {
       print('Error deleting customer: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getCustomers() async {
+    try {
+      QuerySnapshot snapshot = await customersCollection.get();
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
+          .toList();
+    } catch (e) {
+      print('Error getting customers: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getSales() async {
+    try {
+      QuerySnapshot snapshot = await salesCollection.get();
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
+          .toList();
+    } catch (e) {
+      print('Error getting sales: $e');
+      return [];
+    }
+  }
+
+  Future<String> generateSaleCode() async {
+    try {
+      QuerySnapshot snapshot = await salesCollection
+          .orderBy('created_at', descending: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final lastCode = snapshot.docs.first['kode_sale'] as String;
+        final lastNumber = int.tryParse(lastCode.split('-').last) ?? 0;
+        return 'SALE-${lastNumber + 1}';
+      } else {
+        return 'SALE-1';
+      }
+    } catch (e) {
+      print('Error generating sale code: $e');
+      return 'SALE-1';
+    }
+  }
+
+  Future<void> saveSale(
+    String kodeSale,
+    String customerKode,
+    String customerName,
+    List<Map<String, dynamic>> selectedItems,
+    double totalAmount,
+  ) async {
+    try {
+      await salesCollection.add({
+        'kode_sale': kodeSale,
+        'kode_pelanggan': customerKode,
+        'nama_pelanggan': customerName,
+        'items': selectedItems,
+        'total_amount': totalAmount,
+        'created_at': Timestamp.now(),
+      });
+    } catch (e) {
+      print('Error saving sale: $e');
+    }
+  }
+
+  Future<void> deleteSale(String saleId) async {
+    try {
+      await FirebaseFirestore.instance.collection('sales').doc(saleId).delete();
+    } catch (e) {
+      print("Error deleting sale: $e");
+      throw e;
     }
   }
 }

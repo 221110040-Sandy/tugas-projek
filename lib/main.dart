@@ -3,12 +3,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tugas_akhir/firebase_options.dart';
+import 'package:tugas_akhir/screen/add_sales_screen.dart';
 import 'package:tugas_akhir/screen/change_password_screen.dart';
 import 'package:tugas_akhir/screen/customer_screen.dart';
 import 'package:tugas_akhir/screen/home_screen.dart';
 import 'package:tugas_akhir/screen/hot_product_screen.dart';
-import 'package:tugas_akhir/screen/master_items.dart';
+import 'package:tugas_akhir/screen/master_items_screen.dart';
 import 'package:tugas_akhir/screen/profile_screen.dart';
+import 'package:tugas_akhir/screen/sales_transaction_screen.dart';
 import 'package:tugas_akhir/screen/splash_screen.dart';
 import 'package:tugas_akhir/screen/login_screen.dart';
 import 'package:tugas_akhir/screen/user_list_screen.dart';
@@ -76,6 +78,8 @@ class MyApp extends StatelessWidget {
         '/user-list': (context) => UserListScreen(),
         '/hot-product': (context) => HotProductsScreen(),
         '/master-items': (context) => MasterItemsScreen(),
+        '/sales-transaction': (context) => SalesTransactionScreen(),
+        '/add-sales': (context) => AddSalesScreen()
       },
       debugShowCheckedModeBanner: false,
     );

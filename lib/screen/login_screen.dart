@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:tugas_akhir/components/custom_button.dart';
 import 'package:tugas_akhir/components/custom_input_field.dart';
@@ -15,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String errorMessage = '';
 
   AuthService _authService = AuthService();
-
+  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,15 +82,36 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    print('Username: ${_usernameController.text}');
+    await _analytics.logEvent(
+      name: 'login_attempt',
+      parameters: {
+        'email': _usernameController.text,
+      },
+    );
     bool success = await _authService.login(
       _usernameController.text,
       _passwordController.text,
     );
 
     if (success) {
-      Navigator.pushReplacementNamed(context, '/home');
+      await _analytics.logEvent(
+        name: 'login_success',
+        parameters: {
+          'email': _usernameController.text,
+        },
+      );
+
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } else {
+      await _analytics.logEvent(
+        name: 'login_failure',
+        parameters: {
+          'email': _usernameController.text,
+        },
+      );
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
