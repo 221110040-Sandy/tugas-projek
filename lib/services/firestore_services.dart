@@ -12,6 +12,10 @@ class FirestoreService {
       FirebaseFirestore.instance.collection('items');
   final CollectionReference salesCollection =
       FirebaseFirestore.instance.collection('sales');
+  final CollectionReference buysCollection =
+      FirebaseFirestore.instance.collection('buys');
+  final CollectionReference adjustsCollection =
+      FirebaseFirestore.instance.collection('adjusts');
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final DatabaseHelper dbHelper = DatabaseHelper();
 
@@ -297,6 +301,123 @@ class FirestoreService {
       await FirebaseFirestore.instance.collection('sales').doc(saleId).delete();
     } catch (e) {
       print("Error deleting sale: $e");
+      throw e;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getBuys() async {
+    try {
+      QuerySnapshot snapshot = await buysCollection.get();
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
+          .toList();
+    } catch (e) {
+      print('Error getting buys: $e');
+      return [];
+    }
+  }
+
+  Future<String> generateBuyCode() async {
+    try {
+      QuerySnapshot snapshot = await buysCollection
+          .orderBy('created_at', descending: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final lastCode = snapshot.docs.first['kode_buy'] as String;
+        final lastNumber = int.tryParse(lastCode.split('-').last) ?? 0;
+        return 'BUY-${lastNumber + 1}';
+      } else {
+        return 'BUY-1';
+      }
+    } catch (e) {
+      print('Error generating buy code: $e');
+      return 'BUY-1';
+    }
+  }
+
+  Future<void> saveBuy(
+    String kodeBuy,
+    List<Map<String, dynamic>> selectedItems,
+    double totalAmount,
+  ) async {
+    try {
+      await buysCollection.add({
+        'kode_buy': kodeBuy,
+        'items': selectedItems,
+        'total_amount': totalAmount,
+        'created_at': Timestamp.now(),
+      });
+    } catch (e) {
+      print('Error saving buy: $e');
+    }
+  }
+
+  Future<void> deleteBuy(String buyId) async {
+    try {
+      await FirebaseFirestore.instance.collection('buys').doc(buyId).delete();
+    } catch (e) {
+      print("Error deleting buy: $e");
+      throw e;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getAdjusts() async {
+    try {
+      QuerySnapshot snapshot = await adjustsCollection.get();
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
+          .toList();
+    } catch (e) {
+      print('Error getting adjusts: $e');
+      return [];
+    }
+  }
+
+  Future<String> generateAdjustCode() async {
+    try {
+      QuerySnapshot snapshot = await adjustsCollection
+          .orderBy('created_at', descending: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final lastCode = snapshot.docs.first['kode_adjust'] as String;
+        final lastNumber = int.tryParse(lastCode.split('-').last) ?? 0;
+        return 'ADJ-${lastNumber + 1}';
+      } else {
+        return 'ADJ-1';
+      }
+    } catch (e) {
+      print('Error generating adjust code: $e');
+      return 'ADJ-1';
+    }
+  }
+
+  Future<void> saveAdjust(
+    String kodeAdjust,
+    List<Map<String, dynamic>> selectedItems,
+  ) async {
+    try {
+      await adjustsCollection.add({
+        'kode_adjust': kodeAdjust,
+        'items': selectedItems,
+        'created_at': Timestamp.now(),
+      });
+    } catch (e) {
+      print('Error saving adjust: $e');
+    }
+  }
+
+  Future<void> deleteAdjust(String adjustId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('adjusts')
+          .doc(adjustId)
+          .delete();
+    } catch (e) {
+      print("Error deleting adjust: $e");
       throw e;
     }
   }

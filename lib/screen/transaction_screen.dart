@@ -24,9 +24,25 @@ class TransactionScreen extends StatelessWidget {
             _buildGridItem(
               context,
               'Penjualan',
-              Icons.shopping_cart,
+              Icons.attach_money,
               () {
                 Navigator.pushNamed(context, '/sales-transaction');
+              },
+            ),
+            _buildGridItem(
+              context,
+              'Pembelian',
+              Icons.shopping_cart,
+              () {
+                Navigator.pushNamed(context, '/buys-transaction');
+              },
+            ),
+            _buildGridItem(
+              context,
+              'Penyesuaian',
+              Icons.compare_arrows,
+              () {
+                Navigator.pushNamed(context, '/adjusts-transaction');
               },
             ),
           ],

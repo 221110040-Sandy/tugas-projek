@@ -4,41 +4,40 @@ import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:intl/intl.dart';
 import 'package:tugas_akhir/theme/colors.dart';
 
-class SalesTransactionScreen extends StatefulWidget {
+class AdjustsTransactionScreen extends StatefulWidget {
   @override
-  _SalesTransactionScreenState createState() => _SalesTransactionScreenState();
+  _AdjustsTransactionScreenState createState() =>
+      _AdjustsTransactionScreenState();
 }
 
-class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
+class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
   final FirestoreService firestoreService = FirestoreService();
   final TextEditingController searchController = TextEditingController();
-  List<Map<String, dynamic>> sales = [];
-  List<Map<String, dynamic>> filteredSales = [];
+  List<Map<String, dynamic>> adjusts = [];
+  List<Map<String, dynamic>> filteredAdjusts = [];
 
   @override
   void initState() {
     super.initState();
-    firestoreService.getSales().then((data) {
+    firestoreService.getAdjusts().then((data) {
       setState(() {
-        sales = data;
-        filteredSales = sales;
+        adjusts = data;
+        filteredAdjusts = adjusts;
       });
     });
   }
 
-  void _filterSales(String query) {
+  void _filterAdjusts(String query) {
     setState(() {
-      filteredSales = sales.where((sale) {
-        final saleData = sale;
-        final customerName = saleData['nama_pelanggan']?.toLowerCase() ?? '';
-        final saleCode = saleData['kode_sale']?.toLowerCase() ?? '';
-        return customerName.contains(query.toLowerCase()) ||
-            saleCode.contains(query.toLowerCase());
+      filteredAdjusts = adjusts.where((adjust) {
+        final adjustData = adjust;
+        final adjustCode = adjustData['kode_adjust']?.toLowerCase() ?? '';
+        return adjustCode.contains(query.toLowerCase());
       }).toList();
     });
   }
 
-  Future<void> _deleteSale(String saleId) async {
+  Future<void> _deleteAdjust(String adjustId) async {
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -61,29 +60,29 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
 
     if (confirmation == true) {
       try {
-        await firestoreService.deleteSale(saleId);
+        await firestoreService.deleteAdjust(adjustId);
         setState(() {
-          sales.removeWhere((sale) => sale['id'] == saleId);
-          filteredSales = List.from(sales);
+          adjusts.removeWhere((adjust) => adjust['id'] == adjustId);
+          filteredAdjusts = List.from(adjusts);
         });
       } catch (e) {
-        print("Error deleting sale: $e");
+        print("Error deleting adjust: $e");
       }
     }
   }
 
-  void _showSaleDetails(Map<String, dynamic> sale) {
+  void _showAdjustDetails(Map<String, dynamic> adjust) {
     showDialog(
       context: context,
       builder: (context) {
-        final createdAt = (sale['created_at'] as Timestamp?)?.toDate();
+        final createdAt = (adjust['created_at'] as Timestamp?)?.toDate();
         final formattedDate = createdAt != null
             ? DateFormat('yyyy-MM-dd HH:mm').format(createdAt)
             : 'Unknown Date';
 
         return AlertDialog(
           title: Text(
-            'Details for Sale: ${sale['kode_sale'] ?? 'Unknown'}',
+            'Details for Adjust: ${adjust['kode_adjust'] ?? 'Unknown'}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: SingleChildScrollView(
@@ -93,24 +92,14 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
               children: [
                 Text('Date: $formattedDate'),
                 Text(
-                    'Total Amount: \$${sale['total_amount']?.toStringAsFixed(2) ?? '0.00'}'),
+                    'Total Amount: \$${adjust['total_amount']?.toStringAsFixed(2) ?? '0.00'}'),
                 const SizedBox(height: 16),
                 Text(
                   'Items:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                ...((sale['items'] as List<dynamic>? ?? []).map((item) {
-                  final itemName = item['nama'] ?? 'Unknown';
-                  final itemQuantity = item['jumlah'] ?? 0;
-                  final itemPrice = item['harga'] ?? 0.0;
-                  final totalItemPrice = itemPrice * itemQuantity;
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(
-                      '- $itemName: $itemQuantity pcs x \$${itemPrice.toStringAsFixed(2)} = \$${totalItemPrice.toStringAsFixed(2)}',
-                    ),
-                  );
+                ...((adjust['items'] as List<dynamic>? ?? []).map((item) {
+                  return Text('- ${item['nama']} (${item['jumlah']} pcs)');
                 }).toList()),
               ],
             ),
@@ -130,13 +119,13 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sales Transactions'),
+        title: const Text('Adjusts Transactions'),
         backgroundColor: secondaryColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              Navigator.pushNamed(context, '/add-sales');
+              Navigator.pushNamed(context, '/add-adjusts');
             },
           ),
         ],
@@ -152,29 +141,29 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
                 border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.search),
               ),
-              onChanged: _filterSales,
+              onChanged: _filterAdjusts,
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredSales.length,
+              itemCount: filteredAdjusts.length,
               itemBuilder: (context, index) {
-                final sale = filteredSales[index];
-                final customerName = sale['nama_pelanggan'] ?? 0.0;
-                final totalAmount = sale['total_amount'] ?? 0.0;
-                final createdAt = (sale['created_at'] as Timestamp?)?.toDate();
+                final adjust = filteredAdjusts[index];
+                final totalAmount = adjust['total_amount'] ?? 0.0;
+                final createdAt =
+                    (adjust['created_at'] as Timestamp?)?.toDate();
                 final formattedDate = createdAt != null
                     ? DateFormat('yyyy-MM-dd HH:mm').format(createdAt)
                     : 'Unknown Date';
-                final saleId = sale['id'];
+                final adjustId = adjust['id'];
 
                 return Dismissible(
-                  key: Key(saleId),
+                  key: Key(adjustId),
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) async {
-                    await _deleteSale(saleId);
+                    await _deleteAdjust(adjustId);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Sale deleted')),
+                      SnackBar(content: Text('Adjust deleted')),
                     );
                   },
                   background: Container(
@@ -184,9 +173,9 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   child: ListTile(
-                    title: Text('Sale: ${sale['kode_sale'] ?? 'Unknown'}'),
+                    title:
+                        Text('Adjust: ${adjust['kode_adjust'] ?? 'Unknown'}'),
                     subtitle: Text(
-                      'Customer: $customerName\n'
                       'Date: $formattedDate\n'
                       'Total: \$${totalAmount.toStringAsFixed(2)}',
                     ),
@@ -196,12 +185,12 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.info),
-                          onPressed: () => _showSaleDetails(sale),
+                          onPressed: () => _showAdjustDetails(adjust),
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            _deleteSale(saleId);
+                            _deleteAdjust(adjustId);
                           },
                           color: Colors.redAccent,
                         ),
