@@ -1,0 +1,19 @@
+{
+  "home": "Beranda",
+  "master": "Master",
+  "transaction": "Transaksi",
+  "report": "Laporan",
+  "settings": "Pengaturan",
+  "language": "Bahasa",
+  "profile": "Profil",
+  "change_password": "Ganti Kata Sandi",
+  "user_list": "Daftar Pengguna",
+  "logout": "Keluar",
+  "hello_user": "Halo, {username}!",
+  "sales": "Penjualan",
+  "buys": "Pembelian",
+  "adjusts": "Penyesuaian",
+  "items": "Barang",
+  "customers": "Pelanggan",
+  "hot_products": "Produk Terlaris"
+}

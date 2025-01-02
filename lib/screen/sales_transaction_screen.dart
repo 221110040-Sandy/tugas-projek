@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:intl/intl.dart';
 import 'package:tugas_akhir/theme/colors.dart';
@@ -160,7 +161,7 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
               itemCount: filteredSales.length,
               itemBuilder: (context, index) {
                 final sale = filteredSales[index];
-                final customerName = sale['nama_pelanggan'] ?? 0.0;
+                final customerName = sale['nama_pelanggan '] ?? 0.0;
                 final totalAmount = sale['total_amount'] ?? 0.0;
                 final createdAt = (sale['created_at'] as Timestamp?)?.toDate();
                 final formattedDate = createdAt != null

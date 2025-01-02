@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/theme/colors.dart';
 
 class MasterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -23,7 +25,7 @@ class MasterScreen extends StatelessWidget {
           children: <Widget>[
             _buildGridItem(
               context,
-              'Master Barang',
+              loc.translate('items'),
               Icons.shopping_cart,
               () {
                 Navigator.pushNamed(context, '/master-items');
@@ -31,7 +33,7 @@ class MasterScreen extends StatelessWidget {
             ),
             _buildGridItem(
               context,
-              'Pelanggan',
+              loc.translate('customers'),
               Icons.people,
               () {
                 Navigator.pushNamed(context, '/customers');
@@ -39,7 +41,7 @@ class MasterScreen extends StatelessWidget {
             ),
             _buildGridItem(
               context,
-              'Hot Product',
+              loc.translate('hot_products'),
               Icons.whatshot,
               () {
                 Navigator.pushNamed(context, '/hot-product');

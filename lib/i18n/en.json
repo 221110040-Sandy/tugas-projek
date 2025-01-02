@@ -1,0 +1,20 @@
+{
+  "home": "Home",
+  "master": "Master",
+  "transaction": "Transaction",
+  "report": "Report",
+  "settings": "Settings",
+  "language": "Language",
+  "profile": "Profile",
+  "change_password": "Change Password",
+  "user_list": "User List",
+  "logout": "Logout",
+  "hello_user": "Hello, {username}!",
+  "sales": "Sales",
+  "buys": "Buy",
+  "adjusts": "Adjustment",
+  "items": "Items",
+  "customers": "Customer",
+  "hot_products": "Hot Products"
+
+}

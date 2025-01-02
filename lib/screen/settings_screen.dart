@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
+import 'package:tugas_akhir/main.dart';
 import 'package:tugas_akhir/screen/change_password_screen.dart';
 import 'package:tugas_akhir/screen/profile_screen.dart';
 import 'package:tugas_akhir/screen/user_list_screen.dart';
@@ -13,11 +15,13 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   String? _role;
   String? _username;
+  String _currentLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _loadLanguagePreference();
   }
 
   Future<void> _loadUserData() async {
@@ -28,8 +32,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentLanguage = prefs.getString('language') ?? 'en';
+    });
+  }
+
+  Future<void> _changeLanguage(String languageCode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language', languageCode);
+
+    setState(() {
+      _currentLanguage = languageCode;
+    });
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => MyApp(
+              username: _username,
+              role: _role,
+              languageCode: _currentLanguage)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
+
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -47,7 +78,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             const SizedBox(height: 20),
             Text(
-              'Hello, $_username!',
+              loc
+                  .translate('hello_user')
+                  .replaceAll('{username}', _username ?? ''),
               style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -56,15 +89,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
+            Card(
+              color: Colors.white,
+              elevation: 5,
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              child: ListTile(
+                leading: const Icon(Icons.language, color: Colors.blue),
+                title: Text(
+                  loc.translate('language'),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                trailing: DropdownButton<String>(
+                  value: _currentLanguage,
+                  items: const [
+                    DropdownMenuItem(value: 'en', child: Text('English')),
+                    DropdownMenuItem(value: 'id', child: Text('Indonesia')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      _changeLanguage(value);
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             _buildListTile(
-              title: 'Profile',
+              title: loc.translate('profile'),
               icon: Icons.person,
               onTap: () {
                 Navigator.pushNamed(context, '/profile');
               },
             ),
             _buildListTile(
-              title: 'Change Password',
+              title: loc.translate('change_password'),
               icon: Icons.lock,
               onTap: () {
                 Navigator.pushNamed(context, '/change-password');
@@ -72,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             if (_role == 'super_admin')
               _buildListTile(
-                title: 'User List',
+                title: loc.translate('user_list'),
                 icon: Icons.list,
                 onTap: () {
                   Navigator.pushNamed(context, '/user-list');
@@ -80,7 +139,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             const SizedBox(height: 20),
             _buildListTile(
-              title: 'Logout',
+              title: loc.translate('logout'),
               icon: Icons.logout,
               onTap: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -95,10 +154,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildListTile(
-      {required String title,
-      required IconData icon,
-      required VoidCallback onTap}) {
+  Widget _buildListTile({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10),
       color: Colors.white,

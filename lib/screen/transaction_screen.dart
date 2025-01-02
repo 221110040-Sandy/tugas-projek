@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/theme/colors.dart';
 
 class TransactionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -23,7 +25,7 @@ class TransactionScreen extends StatelessWidget {
           children: <Widget>[
             _buildGridItem(
               context,
-              'Penjualan',
+              loc.translate('sales'),
               Icons.attach_money,
               () {
                 Navigator.pushNamed(context, '/sales-transaction');
@@ -31,7 +33,7 @@ class TransactionScreen extends StatelessWidget {
             ),
             _buildGridItem(
               context,
-              'Pembelian',
+              loc.translate('buys'),
               Icons.shopping_cart,
               () {
                 Navigator.pushNamed(context, '/buys-transaction');
@@ -39,7 +41,7 @@ class TransactionScreen extends StatelessWidget {
             ),
             _buildGridItem(
               context,
-              'Penyesuaian',
+              loc.translate('adjusts'),
               Icons.compare_arrows,
               () {
                 Navigator.pushNamed(context, '/adjusts-transaction');

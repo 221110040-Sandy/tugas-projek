@@ -22,12 +22,19 @@ import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:tugas_akhir/utils.dart';
 import 'package:tugas_akhir/services/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   String? username;
   String? role;
+
+  String languageCode = 'en';
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  languageCode = prefs.getString('language') ?? 'en';
 
   try {
     await Firebase.initializeApp(
@@ -51,18 +58,18 @@ Future<void> main() async {
   DatabaseHelper dbHelper = DatabaseHelper();
   await dbHelper.database;
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
   username = prefs.getString('username');
   role = prefs.getString('role');
 
-  runApp(MyApp(username: username, role: role));
+  runApp(MyApp(username: username, role: role, languageCode: languageCode));
 }
 
 class MyApp extends StatelessWidget {
   final String? username;
   final String? role;
+  final String languageCode;
 
-  MyApp({this.username, this.role});
+  MyApp({this.username, this.role, required this.languageCode});
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +78,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('id', ''),
+      ],
+      localizationsDelegates: const [
+        AppLocalizationDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      locale: Locale(languageCode),
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/screen/master_screen.dart';
 import 'package:tugas_akhir/screen/transaction_screen.dart';
 import 'package:tugas_akhir/services/auth_services.dart';
@@ -31,9 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getAppBarTitle()),
+        title: Text(_getAppBarTitle(loc)),
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -42,44 +44,44 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: Colors.orangeAccent,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: loc.translate('home'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.storage),
-            label: 'Master',
+            label: loc.translate('master'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.swap_horiz),
-            label: 'Transactions',
+            label: loc.translate('transaction'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
-            label: 'Reports',
+            label: loc.translate('report'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: loc.translate('settings'),
           ),
         ],
       ),
     );
   }
 
-  String _getAppBarTitle() {
+  String _getAppBarTitle(loc) {
     switch (_currentIndex) {
       case 0:
-        return 'Home';
+        return loc.translate('home');
       case 1:
-        return 'Master Data';
+        return loc.translate('master');
       case 2:
-        return 'Transactions';
+        return loc.translate('transaction');
       case 3:
-        return 'Reports';
+        return loc.translate('report');
       case 4:
-        return 'Settings';
+        return loc.translate('settings');
       default:
         return 'Home';
     }
