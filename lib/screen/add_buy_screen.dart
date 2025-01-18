@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 
 class AddBuysScreen extends StatefulWidget {
@@ -39,9 +40,13 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
   }
 
   Future<void> submitBuy() async {
+    final loc = AppLocalization.of(context);
+
     if (selectedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select at least one item.')),
+        SnackBar(
+            content:
+                Text(loc.translate('item') + " " + loc.translate('empty'))),
       );
       return;
     }
@@ -49,18 +54,18 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
     bool confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Confirm Buy'),
+            title: Text(loc.translate('confirm') + ' ' + loc.translate('buy')),
             content: Text(
-              'Total: \$${totalAmount.toStringAsFixed(2)}\nDo you want to proceed?',
+              '${loc.translate('total')}: \$${totalAmount.toStringAsFixed(2)}',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text('Cancel'),
+                child: Text(loc.translate('cancel')),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text('Confirm'),
+                child: Text(loc.translate('confirm')),
               ),
             ],
           ),
@@ -85,27 +90,30 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Buy added successfully!')),
+      SnackBar(content: Text(loc.translate('success'))),
     );
 
     Navigator.of(context).pop();
   }
 
-  Future<void> showPriceInputDialog(Map<String, dynamic> selectedItem) async {
+  Future<void> showPriceInputDialog(
+      Map<String, dynamic> selectedItem, loc) async {
     priceController.clear();
     double? enteredPrice = await showDialog<double>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Enter Price for ${selectedItem['nama']}'),
+        title: Text(
+            '${loc.translate('enter')}${loc.translate('price')} ${selectedItem['nama']}'),
         content: TextField(
           controller: priceController,
           keyboardType: TextInputType.number,
-          decoration: InputDecoration(hintText: 'Enter price'),
+          decoration: InputDecoration(
+              hintText: loc.translate('enter') + loc.translate('price')),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: Text(loc.translate('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -114,11 +122,11 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
                 Navigator.pop(context, price);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Please enter a valid price.')),
+                  SnackBar(content: Text(loc.translate('valid_price'))),
                 );
               }
             },
-            child: Text('Add'),
+            child: Text(loc.translate('add')),
           ),
         ],
       ),
@@ -131,9 +139,10 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Buys Transaction'),
+        title: Text(loc.translate('add') + ' ' + loc.translate('buys')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -147,7 +156,7 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
                 builder: (context,
                     AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No items available.'));
+                    return Center(child: Text(loc.translate('empty')));
                   }
 
                   final availableItems = snapshot.data!
@@ -156,11 +165,12 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
                       .toList();
 
                   if (availableItems.isEmpty) {
-                    return Center(child: Text('All items have been added.'));
+                    return Center(child: Text(loc.translate('empty')));
                   }
 
                   return DropdownButton<String>(
-                    hint: Text('Select Item'),
+                    hint: Text(
+                        loc.translate('select') + ' ' + loc.translate('item')),
                     value: selectedItemId,
                     isExpanded: true,
                     onChanged: (value) {
@@ -169,7 +179,7 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
                       setState(() {
                         selectedItemId = null;
                       });
-                      showPriceInputDialog(selectedItem);
+                      showPriceInputDialog(selectedItem, loc);
                     },
                     items: availableItems.map<DropdownMenuItem<String>>((item) {
                       return DropdownMenuItem<String>(
@@ -188,7 +198,8 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
                   final item = selectedItems[index];
                   return ListTile(
                     title: Text(item['nama']),
-                    subtitle: Text('Price: \$${item['harga']}'),
+                    subtitle:
+                        Text('${loc.translate('price')}: \$${item['harga']}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -218,10 +229,11 @@ class _AddBuysScreenState extends State<AddBuysScreen> {
             Center(
               child: Column(
                 children: [
-                  Text('Total: \$${totalAmount.toStringAsFixed(2)}'),
+                  Text(
+                      '${loc.translate('total')}: \$${totalAmount.toStringAsFixed(2)}'),
                   ElevatedButton(
                     onPressed: submitBuy,
-                    child: Text('Submit'),
+                    child: Text(loc.translate('confirm')),
                   ),
                 ],
               ),

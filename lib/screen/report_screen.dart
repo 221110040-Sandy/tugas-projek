@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/theme/colors.dart';
 
-class MasterScreen extends StatelessWidget {
+class ReportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalization.of(context);
@@ -25,34 +25,42 @@ class MasterScreen extends StatelessWidget {
           children: <Widget>[
             _buildGridItem(
               context,
-              loc.translate('items'),
+              loc.translate('sales'),
+              Icons.attach_money,
+              () {
+                Navigator.pushNamed(context, '/sales-report');
+              },
+            ),
+            _buildGridItem(
+              context,
+              loc.translate('buys'),
               Icons.shopping_cart,
               () {
-                Navigator.pushNamed(context, '/master-items');
+                Navigator.pushNamed(context, '/buys-report');
               },
             ),
             _buildGridItem(
               context,
-              loc.translate('customers'),
-              Icons.people,
+              loc.translate('adjusts'),
+              Icons.compare_arrows,
               () {
-                Navigator.pushNamed(context, '/customers');
+                Navigator.pushNamed(context, '/adjusts-report');
               },
             ),
             _buildGridItem(
               context,
-              loc.translate('hot_products'),
-              Icons.whatshot,
+              loc.translate('stocks'),
+              Icons.inventory,
               () {
-                Navigator.pushNamed(context, '/hot-product');
+                Navigator.pushNamed(context, '/stocks-report');
               },
             ),
             _buildGridItem(
               context,
-              loc.translate('contacts'),
-              Icons.contact_phone,
+              loc.translate('incomes'),
+              Icons.monetization_on_outlined,
               () {
-                Navigator.pushNamed(context, '/contacts');
+                Navigator.pushNamed(context, '/incomes-report');
               },
             ),
           ],

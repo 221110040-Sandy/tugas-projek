@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:tugas_akhir/services/imagekit.dart';
 import 'package:tugas_akhir/theme/colors.dart';
@@ -70,28 +71,32 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
     }
   }
 
-  void _showAddItemDialog() {
+  void _showAddItemDialog(loc) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Tambah Barang'),
+          title: Text(
+            loc.translate('add') + loc.translate('items'),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: namaController,
-                  decoration: const InputDecoration(labelText: 'Nama Barang'),
+                  decoration: InputDecoration(labelText: loc.translate('name')),
                 ),
                 TextField(
                   controller: stokAwalController,
-                  decoration: const InputDecoration(labelText: 'Stok Awal'),
+                  decoration:
+                      InputDecoration(labelText: loc.translate('stock')),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
                   controller: hargaController,
-                  decoration: const InputDecoration(labelText: 'Harga'),
+                  decoration:
+                      InputDecoration(labelText: loc.translate('price')),
                   keyboardType: TextInputType.number,
                 ),
                 SizedBox(height: 16),
@@ -107,11 +112,11 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
           ),
           actions: [
             TextButton(
-              child: const Text('Batal'),
+              child: Text(loc.translate('cancel')),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Tambah'),
+              child: Text(loc.translate('add')),
               onPressed: _addNewItem,
             ),
           ],
@@ -122,14 +127,15 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Master Barang'),
+        title: Text(loc.translate('items')),
         backgroundColor: secondaryColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: _showAddItemDialog,
+            onPressed: () => _showAddItemDialog(loc),
           ),
         ],
       ),
@@ -139,8 +145,8 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Cari Barang',
+              decoration: InputDecoration(
+                labelText: loc.translate('search') + loc.translate('items'),
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
@@ -170,8 +176,9 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Stok Awal: ${itemData['stok_awal']}'),
-                      Text('Harga: Rp${itemData['harga']}'),
+                      Text(
+                          '${loc.translate('stock')}: ${itemData['stok_awal']}'),
+                      Text('${loc.translate('price')}: Rp${itemData['harga']}'),
                     ],
                   ),
                   leading: imageUrl != null
@@ -184,14 +191,14 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
-                          _showEditItemDialog(context, itemId, itemData);
+                          _showEditItemDialog(context, itemId, itemData, loc);
                         },
                         color: Colors.blueAccent,
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
-                          _deleteItem(context, itemId);
+                          _deleteItem(context, itemId, loc);
                         },
                         color: Colors.redAccent,
                       ),
@@ -207,7 +214,7 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
   }
 
   void _showEditItemDialog(
-      BuildContext context, String itemId, Map<String, dynamic> itemData) {
+      BuildContext context, String itemId, Map<String, dynamic> itemData, loc) {
     final namaController = TextEditingController(text: itemData['nama']);
     final stokAwalController =
         TextEditingController(text: itemData['stok_awal'].toString());
@@ -218,37 +225,37 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit Barang'),
+          title: Text('Edit' + loc.translate('items')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Kode: ${itemData['kode']}',
+                '${loc.translate('code')}: ${itemData['kode']}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextField(
                 controller: namaController,
-                decoration: const InputDecoration(labelText: 'Nama Barang'),
+                decoration: InputDecoration(labelText: loc.translate('name')),
               ),
               TextField(
                 controller: stokAwalController,
-                decoration: const InputDecoration(labelText: 'Stok Awal'),
+                decoration: InputDecoration(labelText: loc.translate('stock')),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: hargaController,
-                decoration: const InputDecoration(labelText: 'Harga'),
+                decoration: InputDecoration(labelText: loc.translate('price')),
                 keyboardType: TextInputType.number,
               ),
             ],
           ),
           actions: [
             TextButton(
-              child: const Text('Batal'),
+              child: Text(loc.translate('cancel')),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Simpan'),
+              child: Text(loc.translate('save')),
               onPressed: () async {
                 await firestoreService.updateItem(
                   itemId,
@@ -265,20 +272,20 @@ class _MasterItemsScreenState extends State<MasterItemsScreen> {
     );
   }
 
-  Future<void> _deleteItem(BuildContext context, String itemId) async {
+  Future<void> _deleteItem(BuildContext context, String itemId, loc) async {
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Hapus Barang'),
-          content: const Text('Yakin ingin menghapus barang ini?'),
+          title: Text(loc.translate('delete')),
+          content: Text(loc.translate('delete_confirmation')),
           actions: [
             TextButton(
-              child: const Text('Batal'),
+              child: Text(loc.translate('cancel')),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: const Text('Hapus'),
+              child: Text(loc.translate('delete')),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],

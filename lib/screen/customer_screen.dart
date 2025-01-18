@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:tugas_akhir/theme/colors.dart';
 
@@ -32,15 +33,16 @@ class _CustomerScreenState extends State<CustomerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Customer'),
+          title: Text(loc.translate('customer')),
           backgroundColor: secondaryColor,
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
-                _showAddCustomerDialog();
+                _showAddCustomerDialog(loc);
               },
             ),
           ],
@@ -51,8 +53,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: searchController,
-                decoration: const InputDecoration(
-                  labelText: 'Search Customer',
+                decoration: InputDecoration(
+                  labelText:
+                      loc.translate('search') + ' ' + loc.translate('customer'),
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (value) {
@@ -111,12 +114,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'Alamat: ${customerData['alamat']}',
+                            '${loc.translate('address')}: ${customerData['alamat']}',
                             style: TextStyle(color: Colors.grey[700]),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'No HP: ${customerData['no_hp']}',
+                            '${loc.translate('phone')}: ${customerData['no_hp']}',
                             style: TextStyle(color: Colors.grey[700]),
                           ),
                           Row(
@@ -126,14 +129,14 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
                                   _showEditCustomerDialog(
-                                      context, customerId, customerData);
+                                      context, customerId, customerData, loc);
                                 },
                                 color: Colors.blueAccent,
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
-                                  _deleteCustomer(context, customerId);
+                                  _deleteCustomer(context, customerId, loc);
                                 },
                                 color: Colors.redAccent,
                               ),
@@ -150,42 +153,43 @@ class _CustomerScreenState extends State<CustomerScreen> {
         ));
   }
 
-  void _showAddCustomerDialog() {
+  void _showAddCustomerDialog(loc) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add Customer'),
+          title: Text(loc.translate('add') + ' ' + loc.translate('customer')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: kodeController,
-                decoration: const InputDecoration(labelText: 'Kode'),
+                decoration: InputDecoration(labelText: loc.translate('code')),
               ),
               TextField(
                 controller: namaController,
-                decoration: const InputDecoration(labelText: 'Nama'),
+                decoration: InputDecoration(labelText: loc.translate('name')),
               ),
               TextField(
                 controller: alamatController,
-                decoration: const InputDecoration(labelText: 'Alamat'),
+                decoration:
+                    InputDecoration(labelText: loc.translate('address')),
               ),
               TextField(
                 controller: noHpController,
-                decoration: const InputDecoration(labelText: 'No HP'),
+                decoration: InputDecoration(labelText: loc.translate('phone')),
               ),
             ],
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(loc.translate('cancel')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Add'),
+              child: Text(loc.translate('add')),
               onPressed: () async {
                 await firestoreService.addCustomer(
                   kodeController.text,
@@ -207,7 +211,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
   }
 
   void _showEditCustomerDialog(BuildContext context, String customerId,
-      Map<String, dynamic> customerData) {
+      Map<String, dynamic> customerData, loc) {
     final kodeController = TextEditingController(text: customerData['kode']);
     final namaController = TextEditingController(text: customerData['nama']);
     final alamatController =
@@ -218,37 +222,38 @@ class _CustomerScreenState extends State<CustomerScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit Customer'),
+          title: Text(loc.translate('edit') + ' ' + loc.translate('customer')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Kode: ${customerData['kode']}',
+                '${loc.translate('code')}: ${customerData['kode']}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextField(
                 controller: namaController,
-                decoration: const InputDecoration(labelText: 'Nama'),
+                decoration: InputDecoration(labelText: loc.translate('name')),
               ),
               TextField(
                 controller: alamatController,
-                decoration: const InputDecoration(labelText: 'Alamat'),
+                decoration:
+                    InputDecoration(labelText: loc.translate('address')),
               ),
               TextField(
                 controller: noHpController,
-                decoration: const InputDecoration(labelText: 'No HP'),
+                decoration: InputDecoration(labelText: loc.translate('phone')),
               ),
             ],
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(loc.translate('cancel')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Save'),
+              child: Text(loc.translate('save')),
               onPressed: () async {
                 await firestoreService.updateCustomer(
                   customerId,
@@ -266,20 +271,22 @@ class _CustomerScreenState extends State<CustomerScreen> {
     );
   }
 
-  Future<void> _deleteCustomer(BuildContext context, String customerId) async {
+  Future<void> _deleteCustomer(
+      BuildContext context, String customerId, loc) async {
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Customer'),
-          content: const Text('Are you sure you want to delete this customer?'),
+          title:
+              Text(loc.translate('delete') + ' ' + loc.translate('customer')),
+          content: Text(loc.translate('delete_confirmation')),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(loc.translate('cancel')),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: const Text('Delete'),
+              child: Text(loc.translate('delete')),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],

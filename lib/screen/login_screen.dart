@@ -45,14 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Colors.white,
                 ),
                 const SizedBox(height: 20.0),
-                const Text(
-                  'Welcome Back!',
-                  style: TextStyle(
-                    fontSize: 28.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
                 const SizedBox(height: 40.0),
                 CustomInputField(
                   controller: _usernameController,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:tugas_akhir/theme/colors.dart';
 
@@ -8,14 +9,15 @@ class UserListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User List'),
+        title: Text(loc.translate('user_list')),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              _showAddUserDialog(context);
+              _showAddUserDialog(context, loc);
             },
           ),
         ],
@@ -83,13 +85,14 @@ class UserListScreen extends StatelessWidget {
                           icon: const Icon(Icons.edit),
                           onPressed: () {
                             _showEditRoleDialog(context, userId,
-                                userData['username'], userData['role']);
+                                userData['username'], userData['role'], loc);
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            _deleteUser(context, userId, userData['username']);
+                            _deleteUser(
+                                context, userId, userData['username'], loc);
                           },
                         ),
                       ],
@@ -104,7 +107,7 @@ class UserListScreen extends StatelessWidget {
     );
   }
 
-  void _showAddUserDialog(BuildContext context) {
+  void _showAddUserDialog(BuildContext context, loc) {
     final usernameController = TextEditingController();
     final passwordController = TextEditingController();
     String selectedRole = 'kasir';
@@ -113,7 +116,7 @@ class UserListScreen extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add User'),
+          title: Text(loc.translate('add')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -155,7 +158,7 @@ class UserListScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: Text(loc.translate('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -168,7 +171,7 @@ class UserListScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 }
               },
-              child: const Text('Add'),
+              child: Text(loc.translate('add')),
             ),
           ],
         );
@@ -177,7 +180,7 @@ class UserListScreen extends StatelessWidget {
   }
 
   void _showEditRoleDialog(BuildContext context, String userId, String username,
-      String currentRole) {
+      String currentRole, loc) {
     final selectedRoleNotifier = ValueNotifier<String>(currentRole);
 
     showDialog(
@@ -188,7 +191,7 @@ class UserListScreen extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Edit role untuk $username'),
+              Text('Edit role $username'),
               ValueListenableBuilder<String>(
                 valueListenable: selectedRoleNotifier,
                 builder: (context, selectedRole, child) {
@@ -212,13 +215,13 @@ class UserListScreen extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(loc.translate('cancel')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Save'),
+              child: Text(loc.translate('save')),
               onPressed: () async {
                 await FirestoreService().updateUserRole(
                     userId, username, selectedRoleNotifier.value);
@@ -232,20 +235,20 @@ class UserListScreen extends StatelessWidget {
   }
 
   Future<void> _deleteUser(
-      BuildContext context, String userId, String username) async {
+      BuildContext context, String userId, String username, loc) async {
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete User'),
-          content: const Text('Are you sure you want to delete this user?'),
+          title: Text(loc.translate('delete')),
+          content: Text(loc.translate('delete_confirmation')),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(loc.translate('cancel')),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: const Text('Delete'),
+              child: Text(loc.translate('delete')),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],

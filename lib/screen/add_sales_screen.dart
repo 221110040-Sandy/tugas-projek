@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 
 class AddSalesScreen extends StatefulWidget {
@@ -38,10 +39,16 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
   }
 
   Future<void> submitSale() async {
+    final loc = AppLocalization.of(context);
+
     if (selectedCustomerId == null || selectedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Please select a customer and at least one item.')),
+            content: Text(loc.translate('customer') +
+                " & " +
+                loc.translate('item') +
+                " " +
+                loc.translate('empty'))),
       );
       return;
     }
@@ -56,18 +63,18 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
     bool confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Confirm Sale'),
+            title: Text(loc.translate('confirm') + loc.translate('sale')),
             content: Text(
-              'Customer: $customerName\nTotal: \$${totalAmount.toStringAsFixed(2)}\nDo you want to proceed?',
+              '${loc.translate('customer')}: $customerName\n${loc.translate('total')}: \$${totalAmount.toStringAsFixed(2)}\n}',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text('Cancel'),
+                child: Text(loc.translate('cancel')),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text('Confirm'),
+                child: Text(loc.translate('confirm')),
               ),
             ],
           ),
@@ -94,7 +101,7 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Sale added successfully!')),
+      SnackBar(content: Text(loc.translate('success'))),
     );
 
     Navigator.of(context).pop();
@@ -102,9 +109,10 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Sales Transaction'),
+        title: Text(loc.translate('add') + loc.translate('sales')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -118,11 +126,12 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
                 builder: (context,
                     AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No customers available.'));
+                    return Center(child: Text(loc.translate('empty')));
                   }
 
                   return DropdownButton<String>(
-                    hint: Text('Select Customer'),
+                    hint: Text(
+                        loc.translate('select') + loc.translate('customer')),
                     value: selectedCustomerId,
                     isExpanded: true,
                     onChanged: (value) {
@@ -148,7 +157,7 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
                 builder: (context,
                     AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No items available.'));
+                    return Center(child: Text(loc.translate('empty')));
                   }
 
                   final availableItems = snapshot.data!
@@ -157,11 +166,11 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
                       .toList();
 
                   if (availableItems.isEmpty) {
-                    return Center(child: Text('All items have been added.'));
+                    return Center(child: Text(loc.translate('empty')));
                   }
 
                   return DropdownButton<String>(
-                    hint: Text('Select Item'),
+                    hint: Text(loc.translate('select') + loc.translate('item')),
                     value: selectedItemId,
                     isExpanded: true,
                     onChanged: (value) {
@@ -189,7 +198,8 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
                   final item = selectedItems[index];
                   return ListTile(
                     title: Text(item['nama']),
-                    subtitle: Text('Price: \$${item['harga']}'),
+                    subtitle:
+                        Text('${loc.translate('price')}: \$${item['harga']}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -219,10 +229,11 @@ class _AddSalesScreenState extends State<AddSalesScreen> {
             Center(
               child: Column(
                 children: [
-                  Text('Total: \$${totalAmount.toStringAsFixed(2)}'),
+                  Text(
+                      '${loc.translate('total')}: \$${totalAmount.toStringAsFixed(2)}'),
                   ElevatedButton(
                     onPressed: submitSale,
-                    child: Text('Submit'),
+                    child: Text(loc.translate('submit')),
                   ),
                 ],
               ),

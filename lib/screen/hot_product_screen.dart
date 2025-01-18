@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'dart:convert';
 
 import 'package:tugas_akhir/theme/colors.dart';
@@ -20,9 +21,10 @@ class HotProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hot Products'),
+        title: Text(loc.translate('hot_products')),
         backgroundColor: secondaryColor,
       ),
       body: FutureBuilder<List<dynamic>>(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 
 class AddAdjustsScreen extends StatefulWidget {
@@ -30,9 +31,13 @@ class _AddAdjustsScreenState extends State<AddAdjustsScreen> {
   }
 
   Future<void> submitAdjust() async {
+    final loc = AppLocalization.of(context);
+
     if (selectedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select at least one item.')),
+        SnackBar(
+            content:
+                Text(loc.translate('item') + " " + loc.translate('empty'))),
       );
       return;
     }
@@ -40,18 +45,18 @@ class _AddAdjustsScreenState extends State<AddAdjustsScreen> {
     bool confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Confirm Adjust'),
+            title: Text(loc.translate('confirm')),
             content: Text(
-              'Do you want to proceed with these adjustments?',
+              '${loc.translate('confirm')} ${loc.translate('adjusts')}?',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text('Cancel'),
+                child: Text(loc.translate('cancel')),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text('Confirm'),
+                child: Text(loc.translate('confirm')),
               ),
             ],
           ),
@@ -74,7 +79,7 @@ class _AddAdjustsScreenState extends State<AddAdjustsScreen> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Adjust added successfully!')),
+      SnackBar(content: Text(loc.translate('success'))),
     );
 
     Navigator.of(context).pop();
@@ -82,9 +87,10 @@ class _AddAdjustsScreenState extends State<AddAdjustsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Adjusts Transaction'),
+        title: Text(loc.translate('add') + ' ' + loc.translate('adjusts')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -98,7 +104,7 @@ class _AddAdjustsScreenState extends State<AddAdjustsScreen> {
                 builder: (context,
                     AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No items available.'));
+                    return Center(child: Text(loc.translate('empty')));
                   }
 
                   final availableItems = snapshot.data!
@@ -107,11 +113,12 @@ class _AddAdjustsScreenState extends State<AddAdjustsScreen> {
                       .toList();
 
                   if (availableItems.isEmpty) {
-                    return Center(child: Text('All items have been added.'));
+                    return Center(child: Text(loc.translate('empty')));
                   }
 
                   return DropdownButton<String>(
-                    hint: Text('Select Item'),
+                    hint: Text(
+                        loc.translate('select') + ' ' + loc.translate('item')),
                     value: selectedItemId,
                     isExpanded: true,
                     onChanged: (value) {
@@ -139,7 +146,7 @@ class _AddAdjustsScreenState extends State<AddAdjustsScreen> {
                   final item = selectedItems[index];
                   return ListTile(
                     title: Text(item['nama']),
-                    subtitle: Text('Quantity: ${item['jumlah']}'),
+                    subtitle: Text('Qty : ${item['jumlah']}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -171,7 +178,7 @@ class _AddAdjustsScreenState extends State<AddAdjustsScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: submitAdjust,
-                    child: Text('Submit'),
+                    child: Text(loc.translate('confirm')),
                   ),
                 ],
               ),

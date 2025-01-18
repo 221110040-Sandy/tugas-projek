@@ -22,7 +22,6 @@ class _SplashScreenState extends State<SplashScreen> {
     String? username = prefs.getString('username');
 
     if (mounted) {
-      // Pastikan widget masih aktif
       if (username != null && username.isNotEmpty) {
         Navigator.of(context).pushReplacementNamed('/home');
       } else {

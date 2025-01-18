@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:intl/intl.dart';
 import 'package:tugas_akhir/theme/colors.dart';
@@ -38,19 +39,20 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
   }
 
   Future<void> _deleteAdjust(String adjustId) async {
+    final loc = AppLocalization.of(context);
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Hapus Transaksi'),
-          content: const Text('Yakin ingin menghapus transaksi ini?'),
+          title: Text(loc.translate('delete')),
+          content: Text(loc.translate('delete_confirmation')),
           actions: [
             TextButton(
-              child: const Text('Batal'),
+              child: Text(loc.translate('cancel')),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: const Text('Hapus'),
+              child: Text(loc.translate('delete')),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
@@ -72,17 +74,18 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
   }
 
   void _showAdjustDetails(Map<String, dynamic> adjust) {
+    final loc = AppLocalization.of(context);
     showDialog(
       context: context,
       builder: (context) {
         final createdAt = (adjust['created_at'] as Timestamp?)?.toDate();
         final formattedDate = createdAt != null
             ? DateFormat('yyyy-MM-dd HH:mm').format(createdAt)
-            : 'Unknown Date';
+            : loc.translate('unknown_date');
 
         return AlertDialog(
           title: Text(
-            'Details for Adjust: ${adjust['kode_adjust'] ?? 'Unknown'}',
+            'Detail: ${adjust['kode_adjust'] ?? loc.translate('unknown')}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: SingleChildScrollView(
@@ -90,12 +93,12 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Date: $formattedDate'),
+                Text('${loc.translate('date')}: $formattedDate'),
                 Text(
-                    'Total Amount: \$${adjust['total_amount']?.toStringAsFixed(2) ?? '0.00'}'),
+                    '${loc.translate('total')}: \$${adjust['total_amount']?.toStringAsFixed(2) ?? '0.00'}'),
                 const SizedBox(height: 16),
                 Text(
-                  'Items:',
+                  '${loc.translate('items')}:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 ...((adjust['items'] as List<dynamic>? ?? []).map((item) {
@@ -107,7 +110,7 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(loc.translate('close')),
             ),
           ],
         );
@@ -117,9 +120,10 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Adjusts Transactions'),
+        title: Text(loc.translate('adjusts')),
         backgroundColor: secondaryColor,
         actions: [
           IconButton(
@@ -136,10 +140,11 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Search Transaction',
-                border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                labelText:
+                    '${loc.translate('search')} ${loc.translate('transaction')}',
+                border: const OutlineInputBorder(),
+                suffixIcon: const Icon(Icons.search),
               ),
               onChanged: _filterAdjusts,
             ),
@@ -154,7 +159,7 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
                     (adjust['created_at'] as Timestamp?)?.toDate();
                 final formattedDate = createdAt != null
                     ? DateFormat('yyyy-MM-dd HH:mm').format(createdAt)
-                    : 'Unknown Date';
+                    : loc.translate('unknown_date');
                 final adjustId = adjust['id'];
 
                 return Dismissible(
@@ -163,7 +168,7 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
                   onDismissed: (direction) async {
                     await _deleteAdjust(adjustId);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Adjust deleted')),
+                      SnackBar(content: Text(loc.translate('adjust_deleted'))),
                     );
                   },
                   background: Container(
@@ -173,11 +178,11 @@ class _AdjustsTransactionScreenState extends State<AdjustsTransactionScreen> {
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   child: ListTile(
-                    title:
-                        Text('Adjust: ${adjust['kode_adjust'] ?? 'Unknown'}'),
+                    title: Text(
+                        '${loc.translate('code')}: ${adjust['kode_adjust'] ?? loc.translate('unknown')}'),
                     subtitle: Text(
-                      'Date: $formattedDate\n'
-                      'Total: \$${totalAmount.toStringAsFixed(2)}',
+                      '${loc.translate('date')}: $formattedDate\n'
+                      '${loc.translate('total')}: \$${totalAmount.toStringAsFixed(2)}',
                     ),
                     isThreeLine: true,
                     trailing: Row(

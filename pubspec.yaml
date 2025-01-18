@@ -48,6 +48,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   provider: ^6.1.2
+  google_mobile_ads: ^2.2.0
+  contacts_service: ^0.6.3
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:

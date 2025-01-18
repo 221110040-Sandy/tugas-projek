@@ -40,19 +40,20 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
   }
 
   Future<void> _deleteSale(String saleId) async {
+    final loc = AppLocalization.of(context);
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Hapus Transaksi'),
-          content: const Text('Yakin ingin menghapus transaksi ini?'),
+          title: Text(loc.translate('delete')),
+          content: Text(loc.translate('delete_confirmation')),
           actions: [
             TextButton(
-              child: const Text('Batal'),
+              child: Text(loc.translate('cancel')),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: const Text('Hapus'),
+              child: Text(loc.translate('delete')),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
@@ -74,17 +75,18 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
   }
 
   void _showSaleDetails(Map<String, dynamic> sale) {
+    final loc = AppLocalization.of(context);
     showDialog(
       context: context,
       builder: (context) {
         final createdAt = (sale['created_at'] as Timestamp?)?.toDate();
         final formattedDate = createdAt != null
             ? DateFormat('yyyy-MM-dd HH:mm').format(createdAt)
-            : 'Unknown Date';
+            : loc.translate('unknown_date');
 
         return AlertDialog(
           title: Text(
-            'Details for Sale: ${sale['kode_sale'] ?? 'Unknown'}',
+            'Detail: ${sale['kode_sale'] ?? loc.translate('unknown')}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: SingleChildScrollView(
@@ -92,16 +94,16 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Date: $formattedDate'),
+                Text('${loc.translate('date')}: $formattedDate'),
                 Text(
-                    'Total Amount: \$${sale['total_amount']?.toStringAsFixed(2) ?? '0.00'}'),
+                    'total: \$${sale['total_amount']?.toStringAsFixed(2) ?? '0.00'}'),
                 const SizedBox(height: 16),
                 Text(
-                  'Items:',
+                  '${loc.translate('items')}:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 ...((sale['items'] as List<dynamic>? ?? []).map((item) {
-                  final itemName = item['nama'] ?? 'Unknown';
+                  final itemName = item['nama'] ?? loc.translate('unknown');
                   final itemQuantity = item['jumlah'] ?? 0;
                   final itemPrice = item['harga'] ?? 0.0;
                   final totalItemPrice = itemPrice * itemQuantity;
@@ -119,7 +121,7 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(loc.translate('close')),
             ),
           ],
         );
@@ -129,9 +131,10 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sales Transactions'),
+        title: Text(loc.translate('sales')),
         backgroundColor: secondaryColor,
         actions: [
           IconButton(
@@ -148,10 +151,11 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Search Transaction',
-                border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                labelText:
+                    loc.translate('search') + loc.translate('transaction'),
+                border: const OutlineInputBorder(),
+                suffixIcon: const Icon(Icons.search),
               ),
               onChanged: _filterSales,
             ),
@@ -166,7 +170,7 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
                 final createdAt = (sale['created_at'] as Timestamp?)?.toDate();
                 final formattedDate = createdAt != null
                     ? DateFormat('yyyy-MM-dd HH:mm').format(createdAt)
-                    : 'Unknown Date';
+                    : loc.translate('unknown_date');
                 final saleId = sale['id'];
 
                 return Dismissible(
@@ -175,7 +179,7 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
                   onDismissed: (direction) async {
                     await _deleteSale(saleId);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Sale deleted')),
+                      SnackBar(content: Text(loc.translate('success'))),
                     );
                   },
                   background: Container(
@@ -185,11 +189,12 @@ class _SalesTransactionScreenState extends State<SalesTransactionScreen> {
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   child: ListTile(
-                    title: Text('Sale: ${sale['kode_sale'] ?? 'Unknown'}'),
+                    title: Text(
+                        '${loc.translate('code')}: ${sale['kode_sale'] ?? loc.translate('unknown')}'),
                     subtitle: Text(
-                      'Customer: $customerName\n'
-                      'Date: $formattedDate\n'
-                      'Total: \$${totalAmount.toStringAsFixed(2)}',
+                      '${loc.translate('customer')}: $customerName\n'
+                      '${loc.translate('date')}: $formattedDate\n'
+                      '${loc.translate('total')}: \$${totalAmount.toStringAsFixed(2)}',
                     ),
                     isThreeLine: true,
                     trailing: Row(

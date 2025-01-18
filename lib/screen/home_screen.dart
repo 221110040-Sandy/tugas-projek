@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_akhir/localization/app_localization.dart';
+import 'package:tugas_akhir/screen/dashboard_screen.dart';
 import 'package:tugas_akhir/screen/master_screen.dart';
+import 'package:tugas_akhir/screen/report_screen.dart';
 import 'package:tugas_akhir/screen/transaction_screen.dart';
 import 'package:tugas_akhir/services/auth_services.dart';
 import 'package:tugas_akhir/screen/settings_screen.dart';
@@ -17,10 +19,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    const Center(child: Text('Home Page')),
+    DashboardScreen(),
     MasterScreen(),
     TransactionScreen(),
-    const Center(child: Text('Reports Page')),
+    ReportScreen(),
     SettingsScreen(),
   ];
 

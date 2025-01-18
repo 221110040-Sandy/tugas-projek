@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/theme/colors.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -29,9 +30,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(loc.translate('profile')),
       ),
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -48,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: ListView(
           children: [
             Text(
-              'Profile Information',
+              'Profile',
               style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,

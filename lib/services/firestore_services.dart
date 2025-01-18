@@ -421,4 +421,107 @@ class FirestoreService {
       throw e;
     }
   }
+
+  Future<Map<String, dynamic>> getStockReport() async {
+    try {
+      QuerySnapshot itemsSnapshot = await itemsCollection.get();
+      List<Map<String, dynamic>> items = itemsSnapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
+          .toList();
+
+      print('Fetched items: $items');
+
+      Map<String, int> stockLevels = {};
+
+      for (var item in items) {
+        String itemId = item['id'] ?? '';
+        int initialStock = item['stok_awal'] ?? 0;
+
+        stockLevels[itemId] = initialStock;
+      }
+
+      print('Stock levels after initialization: $stockLevels');
+
+      QuerySnapshot buysSnapshot = await buysCollection.get();
+      for (var buy in buysSnapshot.docs) {
+        var buyData = buy.data() as Map<String, dynamic>;
+        var buyItems = buyData['items'] as List<dynamic>;
+
+        for (var buyItem in buyItems) {
+          String itemId = buyItem['id'] ?? '';
+          int quantity = buyItem['jumlah'] ?? 0;
+
+          if (stockLevels.containsKey(itemId)) {
+            stockLevels[itemId] = stockLevels[itemId]! + quantity;
+          }
+        }
+      }
+
+      print('Stock levels after adding buy stock: $stockLevels');
+
+      QuerySnapshot salesSnapshot = await salesCollection.get();
+      for (var sale in salesSnapshot.docs) {
+        var saleData = sale.data() as Map<String, dynamic>;
+        var saleItems = saleData['items'] as List<dynamic>;
+
+        for (var saleItem in saleItems) {
+          String itemId = saleItem['id'] ?? '';
+          int quantity = saleItem['jumlah'] ?? 0;
+          if (stockLevels.containsKey(itemId)) {
+            stockLevels[itemId] = stockLevels[itemId]! - quantity;
+          }
+        }
+      }
+
+      print('Stock levels after subtracting sale stock: $stockLevels');
+
+      QuerySnapshot adjustsSnapshot = await adjustsCollection.get();
+      for (var adjust in adjustsSnapshot.docs) {
+        var adjustData = adjust.data() as Map<String, dynamic>;
+        var adjustItems = adjustData['items'] as List<dynamic>;
+
+        for (var adjustItem in adjustItems) {
+          String itemId = adjustItem['id'] ?? '';
+          int quantity = adjustItem['jumlah'] ?? 0;
+
+          if (stockLevels.containsKey(itemId)) {
+            stockLevels[itemId] = stockLevels[itemId]! + quantity;
+          }
+        }
+      }
+
+      print('Stock levels after adjustments: $stockLevels');
+
+      return stockLevels;
+    } catch (e) {
+      print('Error generating stock report: $e');
+      return {};
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getPenjualan(
+      DateTime? startDate, DateTime? endDate) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('sales')
+        .where('created_at', isGreaterThanOrEqualTo: startDate)
+        .where('created_at', isLessThanOrEqualTo: endDate)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getPembelian(
+      DateTime? startDate, DateTime? endDate) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('buys')
+        .where('created_at', isGreaterThanOrEqualTo: startDate)
+        .where('created_at', isLessThanOrEqualTo: endDate)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+  }
 }

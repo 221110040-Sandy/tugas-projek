@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/services/firestore_services.dart';
 import 'package:intl/intl.dart';
 import 'package:tugas_akhir/theme/colors.dart';
@@ -37,19 +38,20 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
   }
 
   Future<void> _deleteBuy(String buyId) async {
+    final loc = AppLocalization.of(context);
     final confirmation = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Hapus Transaksi'),
-          content: const Text('Yakin ingin menghapus transaksi ini?'),
+          title: Text(loc.translate('delete')),
+          content: Text(loc.translate('delete_confirmation')),
           actions: [
             TextButton(
-              child: const Text('Batal'),
+              child: Text(loc.translate('cancel')),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: const Text('Hapus'),
+              child: Text(loc.translate('delete')),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
@@ -71,17 +73,18 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
   }
 
   void _showBuyDetails(Map<String, dynamic> buy) {
+    final loc = AppLocalization.of(context);
     showDialog(
       context: context,
       builder: (context) {
         final createdAt = (buy['created_at'] as Timestamp?)?.toDate();
         final formattedDate = createdAt != null
             ? DateFormat('yyyy-MM-dd HH:mm').format(createdAt)
-            : 'Unknown Date';
+            : loc.translate('unknown_date');
 
         return AlertDialog(
           title: Text(
-            'Details for Buy: ${buy['kode_buy'] ?? 'Unknown'}',
+            'Detail: ${buy['kode_buy'] ?? loc.translate('unknown')}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: SingleChildScrollView(
@@ -89,16 +92,16 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Date: $formattedDate'),
+                Text('${loc.translate('date')}: $formattedDate'),
                 Text(
-                    'Total Amount: \$${buy['total_amount']?.toStringAsFixed(2) ?? '0.00'}'),
+                    '${loc.translate('total')}: \$${buy['total_amount']?.toStringAsFixed(2) ?? '0.00'}'),
                 const SizedBox(height: 16),
                 Text(
-                  'Items:',
+                  '${loc.translate('items')}:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 ...((buy['items'] as List<dynamic>? ?? []).map((item) {
-                  final itemName = item['nama'] ?? 'Unknown';
+                  final itemName = item['nama'] ?? loc.translate('unknown');
                   final itemQuantity = item['jumlah'] ?? 0;
                   final itemPrice = item['harga'] ?? 0.0;
                   final totalItemPrice = itemPrice * itemQuantity;
@@ -116,7 +119,7 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(loc.translate('close')),
             ),
           ],
         );
@@ -126,9 +129,10 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalization.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buys Transactions'),
+        title: Text(loc.translate('buys')),
         backgroundColor: secondaryColor,
         actions: [
           IconButton(
@@ -145,10 +149,11 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Search Transaction',
-                border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                labelText:
+                    '${loc.translate('search')} ${loc.translate('transaction')}',
+                border: const OutlineInputBorder(),
+                suffixIcon: const Icon(Icons.search),
               ),
               onChanged: _filterBuys,
             ),
@@ -162,7 +167,7 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
                 final createdAt = (buy['created_at'] as Timestamp?)?.toDate();
                 final formattedDate = createdAt != null
                     ? DateFormat('yyyy-MM-dd HH:mm').format(createdAt)
-                    : 'Unknown Date';
+                    : loc.translate('unknown_date');
                 final buyId = buy['id'];
 
                 return Dismissible(
@@ -171,7 +176,7 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
                   onDismissed: (direction) async {
                     await _deleteBuy(buyId);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Buy deleted')),
+                      SnackBar(content: Text(loc.translate('buy_deleted'))),
                     );
                   },
                   background: Container(
@@ -181,10 +186,11 @@ class _BuysTransactionScreenState extends State<BuysTransactionScreen> {
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   child: ListTile(
-                    title: Text('Buy: ${buy['kode_buy'] ?? 'Unknown'}'),
+                    title: Text(
+                        '${loc.translate('code')}: ${buy['kode_buy'] ?? loc.translate('unknown')}'),
                     subtitle: Text(
-                      'Date: $formattedDate\n'
-                      'Total: \$${totalAmount.toStringAsFixed(2)}',
+                      '${loc.translate('date')}: $formattedDate\n'
+                      '${loc.translate('total')}: \$${totalAmount.toStringAsFixed(2)}',
                     ),
                     isThreeLine: true,
                     trailing: Row(
