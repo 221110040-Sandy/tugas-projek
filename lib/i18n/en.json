@@ -51,5 +51,6 @@
   "confirm_new_password": "Confirm New Password",
   "not_match": "Password not match",
   "wrong_password": "Wrong password",
-  "profitloss": "Profit/Loss"
+  "profitloss": "Profit/Loss",
+  "no_access": "You don't have access to this page"
 }

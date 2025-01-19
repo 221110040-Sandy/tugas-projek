@@ -1,8 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tugas_akhir/localization/app_localization.dart';
 import 'package:tugas_akhir/theme/colors.dart';
 
-class ReportScreen extends StatelessWidget {
+class ReportScreen extends StatefulWidget {
+  @override
+  _ReportScreenState createState() => _ReportScreenState();
+}
+
+class _ReportScreenState extends State<ReportScreen> {
+  String? _role;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _role = prefs.getString('role');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalization.of(context);
@@ -19,52 +40,62 @@ class ReportScreen extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
         ),
-        child: GridView.count(
-          crossAxisCount: 2,
-          padding: const EdgeInsets.all(16.0),
-          children: <Widget>[
-            _buildGridItem(
-              context,
-              loc.translate('sales'),
-              Icons.attach_money,
-              () {
-                Navigator.pushNamed(context, '/sales-report');
-              },
-            ),
-            _buildGridItem(
-              context,
-              loc.translate('buys'),
-              Icons.shopping_cart,
-              () {
-                Navigator.pushNamed(context, '/buys-report');
-              },
-            ),
-            _buildGridItem(
-              context,
-              loc.translate('adjusts'),
-              Icons.compare_arrows,
-              () {
-                Navigator.pushNamed(context, '/adjusts-report');
-              },
-            ),
-            _buildGridItem(
-              context,
-              loc.translate('stocks'),
-              Icons.inventory,
-              () {
-                Navigator.pushNamed(context, '/stocks-report');
-              },
-            ),
-            _buildGridItem(
-              context,
-              loc.translate('incomes'),
-              Icons.monetization_on_outlined,
-              () {
-                Navigator.pushNamed(context, '/incomes-report');
-              },
-            ),
-          ],
-        ),
+        child: _role == 'kasir'
+            ? Center(
+                child: Text(
+                  loc.translate('no-access'),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : GridView.count(
+                crossAxisCount: 2,
+                padding: const EdgeInsets.all(16.0),
+                children: <Widget>[
+                  _buildGridItem(
+                    context,
+                    loc.translate('sales'),
+                    Icons.attach_money,
+                    () {
+                      Navigator.pushNamed(context, '/sales-report');
+                    },
+                  ),
+                  _buildGridItem(
+                    context,
+                    loc.translate('buys'),
+                    Icons.shopping_cart,
+                    () {
+                      Navigator.pushNamed(context, '/buys-report');
+                    },
+                  ),
+                  _buildGridItem(
+                    context,
+                    loc.translate('adjusts'),
+                    Icons.compare_arrows,
+                    () {
+                      Navigator.pushNamed(context, '/adjusts-report');
+                    },
+                  ),
+                  _buildGridItem(
+                    context,
+                    loc.translate('stocks'),
+                    Icons.inventory,
+                    () {
+                      Navigator.pushNamed(context, '/stocks-report');
+                    },
+                  ),
+                  _buildGridItem(
+                    context,
+                    loc.translate('incomes'),
+                    Icons.monetization_on_outlined,
+                    () {
+                      Navigator.pushNamed(context, '/incomes-report');
+                    },
+                  ),
+                ],
+              ),
       ),
     );
   }

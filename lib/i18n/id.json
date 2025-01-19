@@ -51,5 +51,6 @@
   "confirm_new_password": "Konfirmasi Kata Sandi Baru",
   "not_match": "Kata sandi tidak cocok",
   "wrong_password": "Kata sandi salah",
-  "profitloss": "Laba/Rugi"
+  "profitloss": "Laba/Rugi",
+  "no_access": "Anda tidak memiliki akses ke halaman ini"
 }
