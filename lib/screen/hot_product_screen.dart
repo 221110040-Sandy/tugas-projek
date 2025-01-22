@@ -43,7 +43,6 @@ class HotProductsScreen extends StatelessWidget {
             itemCount: products.length,
             itemBuilder: (context, index) {
               final product = products[index];
-              print('sad');
               return Card(
                 margin: EdgeInsets.all(8.0),
                 child: ListTile(
